@@ -25,6 +25,7 @@ import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
+import TransactionDialog from '../dialogs/TransactionDialog';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import TRANSACTION_LIST from '../_mocks_/transactions';
@@ -253,6 +254,7 @@ export default function Transaction() {
           />
         </Card>
       </Container>
+      <TransactionDialog />
     </Page>
   );
 }
