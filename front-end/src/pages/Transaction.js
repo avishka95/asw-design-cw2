@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -29,6 +29,8 @@ import TransactionDialog from '../dialogs/TransactionDialog';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import TRANSACTION_LIST from '../_mocks_/transactions';
+import useHttp from 'src/utils/http';
+import { APP_CONFIG } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +41,7 @@ function ccyFormat(num) {
 const TABLE_HEAD = [
   { id: 'description', label: 'Description', alignRight: false },
   { id: 'amount', label: 'Amount', alignRight: false },
+  { id: 'month', label: 'Month', alignRight: false },
   { id: 'category', label: 'Category', alignRight: false },
   { id: '' }
 ];
@@ -74,13 +77,35 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+const ACTIONS = {
+  SET_LOAD_DATA: 'SET_LOAD_DATA',
+  HANDLE_RESET: 'HANDLE_RESET',
+}
+
+const transactionsReducer = (curTrasactionState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_DESCRIPTION:
+      return { ...curTrasactionState, description: action.description }
+    default:
+      throw new Error('Should not get here');
+  }
+}
+
 export default function Transaction() {
+  const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
+  const [{ description }, dispatchTransactions] = useReducer(transactionsReducer,
+    { description: ""});
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const loadTransactions = () => {
+    sendRequest(APP_CONFIG.APIS.GET_TRANSACTIONS, 'GET', null, APP_CONFIG.APIS.GET_TRANSACTIONS);
+  };
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -138,6 +163,18 @@ export default function Transaction() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
+  useEffect(() => {
+    switch (reqExtra) {
+      case APP_CONFIG.APIS.TRANSACTIONS:
+        if (data) {
+
+        }
+        break;
+      default:
+        break;
+    }
+  }, [data, reqExtra, isOpen, isLoading, error]);
+
   return (
     <Page title="Transactions | Minimal-UI">
       <Container>
@@ -179,7 +216,7 @@ export default function Transaction() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, description, amount, isIncome } = row;
+                      const { id, description, amount, isIncome, category } = row;
                       const isItemSelected = selected.indexOf(id) !== -1;
 
                       return (
@@ -210,7 +247,8 @@ export default function Transaction() {
                               {ccyFormat(amount)}
                             </Label>
                           </TableCell>
-                          {/* <TableCell align="left">{amount}</TableCell> */}
+                          <TableCell align="left">{category}</TableCell>
+                          <TableCell align="left">{category}</TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
                           {/* <TableCell align="left">
                             <Label variant="ghost" color={isIncome ? 'success' : 'error'}>

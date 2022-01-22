@@ -5,25 +5,33 @@ const transactions = [
     id: uuidv4(),
     description: 'TEST',
     amount: 1.0,
-    isIncome: true
+    isIncome: true,
+    month: "JANUARY",
+    category: "TEST"
   },
   {
     id: uuidv4(),
     description: 'TEST2',
     amount: 12.0,
-    isIncome: false
+    isIncome: false,
+    month: "JANUARY",
+    category: "TEST"
   },
   {
     id: uuidv4(),
     description: 'TEST3',
     amount: 112.0,
-    isIncome: true
+    isIncome: true,
+    month: "JANUARY",
+    category: "TEST"
   },
   {
     id: uuidv4(),
     description: 'TEST4',
     amount: 10.0,
-    isIncome: false
+    isIncome: false,
+    month: "JANUARY",
+    category: "TEST"
   }
 ];
 
