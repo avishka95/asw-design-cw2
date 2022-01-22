@@ -29,6 +29,7 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import TRANSACTION_LIST from '../_mocks_/transactions';
+import CategoryDialog from 'src/dialogs/CategoryDialog';
 
 // ----------------------------------------------------------------------
 
@@ -74,13 +75,22 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Transaction() {
+export default function Budget() {
   const [page, setPage] = useState(0);
+  const [openCategory, setOpenCategory] = useState(false);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const openBudegtCategory = () => {
+    setOpenCategory(true);
+  };
+
+  const closeBudegtCategory = () => {
+    setOpenCategory(false);
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -141,19 +151,30 @@ export default function Transaction() {
   return (
     <Page title="Budgets | Minimal-UI">
       <Container>
-        <>{console.log('TODO', TRANSACTION_LIST)}</>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Budgets
           </Typography>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Icon icon={plusFill} />}
-          >
-            New Budgets
-          </Button>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+            <Button
+              onClick={openBudegtCategory}
+              variant="contained"
+              component={RouterLink}
+              color="warning"
+              to="#"
+              startIcon={<Icon icon={plusFill} />}
+            >
+              New Budget Category
+            </Button>
+            {/* <Button
+              variant="contained"
+              component={RouterLink}
+              to="#"
+              startIcon={<Icon icon={plusFill} />}
+            >
+              New Budgets
+            </Button> */}
+          </Stack>
         </Stack>
 
         <Card>
@@ -178,6 +199,7 @@ export default function Transaction() {
           />
         </Card>
       </Container>
+      <CategoryDialog open={openCategory} handleClose={closeBudegtCategory}/>
     </Page>
   );
 }
