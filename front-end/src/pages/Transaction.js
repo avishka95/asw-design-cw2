@@ -95,6 +95,7 @@ export default function Transaction() {
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ description }, dispatchTransactions] = useReducer(transactionsReducer,
     { description: ""});
+   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -106,6 +107,13 @@ export default function Transaction() {
     sendRequest(APP_CONFIG.APIS.GET_TRANSACTIONS, 'GET', null, APP_CONFIG.APIS.GET_TRANSACTIONS);
   };
 
+  const handleOpenTransactionDialog = () => {
+    setOpenTransactionDialog(true);
+  };
+
+  const handleCloseTransactionDialog = () => {
+    setOpenTransactionDialog(false);
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -184,6 +192,7 @@ export default function Transaction() {
             Transactions
           </Typography>
           <Button
+            onClick={handleOpenTransactionDialog}
             variant="contained"
             component={RouterLink}
             to="#"
@@ -292,7 +301,7 @@ export default function Transaction() {
           />
         </Card>
       </Container>
-      <TransactionDialog />
+      <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} />
     </Page>
   );
 }

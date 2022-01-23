@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import TextField from '@mui/material/TextField';
@@ -8,7 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
-import { FilledInput, FormControl, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
 
 const ACTIONS = {
@@ -37,7 +37,7 @@ const transactionsReducer = (curTrasactionState, action) => {
   }
 }
 
-export default function TransactionDialog() {
+export default function TransactionDialog(props) {
   const [open, setOpen] = useState(false);
   const [{ description, amount, isIncome, month, category }, dispatchTransactions] = useReducer(transactionsReducer,
     { description: "", amount: 0.0, isIncome: true, month: "JANUARY", category: "JANUARY" });
@@ -47,7 +47,7 @@ export default function TransactionDialog() {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    props.handleClose();
   };
 
   const handleDescription = (event) => {
@@ -68,96 +68,110 @@ export default function TransactionDialog() {
   };
 
   const handleMonth = (event) => {
-    console.log("TODO handleMonth",event.target.value)
+    console.log("TODO handleMonth", event.target.value)
     dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
   };
 
-  const handleCategory= (event) => {
+  const handleCategory = (event) => {
     dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
   };
+
+  useEffect(() => { }, [props.open]);
 
   return (
-    <div sx={{
-      '& .MuiTextField-root': { m: 1, width: '25ch' },
-    }}>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
-      <Dialog fullWidth maxWidth open={open} onClose={handleClose}>
-        <DialogTitle>New Transaction</DialogTitle>
-        <DialogContent>
-          <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
+    <Dialog fullWidth maxWidth open={props.open} onClose={handleClose}>
+      <DialogTitle>New Transaction</DialogTitle>
+      <DialogContent>
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            spacing={2}
           >
-            <TextField
-              // required
-              id="description-required"
-              label="Description"
-              value={description}
-              onChange={handleDescription}
-              // defaultValue="Transaction"
-              variant="standard"
-            />
-            <FormControl fullWidth sx={{ m: 1 }}>
-              <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-amount"
-                type="number"
-                onChange={handleAmount}
-                value={amount}
-                inputProps={{
-                  maxLength: 13,
-                  step: "1",
-                  min: 0
-                }}
-                startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                label="Amount"
-              />
-            </FormControl>
+            <Grid item xs={6}>
+              <FormControl fullWidth sx={{ m: 1 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-amount"
+                  type="number"
+                  onChange={handleAmount}
+                  value={amount}
+                  inputProps={{
+                    maxLength: 13,
+                    step: "1",
+                    min: 0
+                  }}
+                  startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                  label="Amount"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
             <ButtonGroup color={isIncome ? "error" : "primary"} aria-label="income and expense button group">
-              <Button onClick={handleIsIncome} variant={isIncome ? "contained" : "outlined"} color="primary" key="income">Income</Button>
-              <Button onClick={handleIsExpense} variant={isIncome ? "outlined" : "contained"} color="error" key="expense">Expense</Button>
-            </ButtonGroup>
-            <FormControl fullWidth sx={{ m: 1, }}>
-              <InputLabel id="demo-simple-select-label">Month</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                // value={age}
-                label="Month"
-              onChange={handleMonth}
-              >
-                {getMonths().map(e => {
-                  return (<MenuItem value={e}>{e.title}</MenuItem>);
-                })}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth sx={{ m: 1, }}>
-              <InputLabel id="demo-simple-select-label">Category</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                // value={age}
-                label="Category"
-              // onChange={handleChange}
-              >
-                {getMonths().map(e => {
-                  return (<MenuItem value={e}>{e.title}</MenuItem>);
-                })}
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleClose}>Create</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+                <Button onClick={handleIsIncome} variant={isIncome ? "contained" : "outlined"} color="primary" key="income">Income</Button>
+                <Button onClick={handleIsExpense} variant={isIncome ? "outlined" : "contained"} color="error" key="expense">Expense</Button>
+              </ButtonGroup>
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+              variant="outlined"
+                // required
+                id="description-required"
+                label="Description"
+                value={description}
+                onChange={handleDescription}
+                // defaultValue="Transaction"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <FormControl fullWidth sx={{ m: 1, }}>
+                <InputLabel id="demo-simple-select-label">Month</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  // value={age}
+                  label="Month"
+                  onChange={handleMonth}
+                >
+                  {getMonths().map(e => {
+                    return (<MenuItem value={e}>{e.title}</MenuItem>);
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={3}>
+              <FormControl fullWidth sx={{ m: 1, }}>
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  // value={age}
+                  label="Category"
+                // onChange={handleChange}
+                >
+                  {getMonths().map(e => {
+                    return (<MenuItem value={e}>{e.title}</MenuItem>);
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button variant="contained" onClick={handleClose}>Create</Button>
+      </DialogActions>
+    </Dialog>
   );
 }

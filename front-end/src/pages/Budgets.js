@@ -29,6 +29,7 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import TRANSACTION_LIST from '../_mocks_/transactions';
+import BudgetDialog from 'src/dialogs/BudgetDialog';
 import CategoryDialog from 'src/dialogs/CategoryDialog';
 
 // ----------------------------------------------------------------------
@@ -78,6 +79,7 @@ function applySortFilter(array, comparator, query) {
 export default function Budget() {
   const [page, setPage] = useState(0);
   const [openCategory, setOpenCategory] = useState(false);
+  const [openBudget, setOpenBudget] = useState(false);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
@@ -90,6 +92,14 @@ export default function Budget() {
 
   const closeBudegtCategory = () => {
     setOpenCategory(false);
+  };
+
+  const openBudegt = () => {
+    setOpenBudget(true);
+  };
+
+  const closeBudegt = () => {
+    setOpenBudget(false);
   };
 
   const handleRequestSort = (event, property) => {
@@ -166,14 +176,15 @@ export default function Budget() {
             >
               New Budget Category
             </Button>
-            {/* <Button
+            <Button
+              onClick={openBudegt}
               variant="contained"
               component={RouterLink}
               to="#"
               startIcon={<Icon icon={plusFill} />}
             >
-              New Budgets
-            </Button> */}
+              New Budget
+            </Button>
           </Stack>
         </Stack>
 
@@ -199,7 +210,8 @@ export default function Budget() {
           />
         </Card>
       </Container>
-      <CategoryDialog open={openCategory} handleClose={closeBudegtCategory}/>
+      <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} />
+      <BudgetDialog open={openBudget} handleClose={closeBudegt} />
     </Page>
   );
 }

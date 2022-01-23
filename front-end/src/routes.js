@@ -21,13 +21,13 @@ export default function Router() {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" replace /> },
-        { path: 'app', element: <DashboardApp /> },
+        { element: <Navigate to="/dashboard/transaction" replace /> },
+        // { path: 'app', element: <DashboardApp /> },
         { path: 'transaction', element: <Transaction /> },
         { path: 'budget', element: <Budgets /> },
-        { path: 'user', element: <User /> },
-        { path: 'products', element: <Products /> },
-        { path: 'blog', element: <Blog /> }
+        // { path: 'user', element: <User /> },
+        // { path: 'products', element: <Products /> },
+        // { path: 'blog', element: <Blog /> }
       ]
     },
     {
