@@ -256,7 +256,7 @@ export default function Budget() {
                   />
                 </Card>
               </Container>
-              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} />
+              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar}/>
               <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} />
             </>
           );

@@ -18,7 +18,8 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  LinearProgress
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -218,7 +219,9 @@ export default function Transaction() {
             filterName={filterName}
             onFilterName={handleFilterByName}
           /> */}
-
+                <div>
+                  {isLoading && <LinearProgress />}
+                </div>
                 <Scrollbar>
                   <TableContainer sx={{ minWidth: 800 }}>
                     <Table>
@@ -248,10 +251,10 @@ export default function Transaction() {
                                 aria-checked={isItemSelected}
                               >
                                 <TableCell padding="checkbox">
-                                  <Checkbox
+                                  {/* <Checkbox
                                     checked={isItemSelected}
                                     onChange={(event) => handleClick(event, id)}
-                                  />
+                                  /> */}
                                 </TableCell>
                                 <TableCell component="th" scope="row" padding="none" >
                                   <Stack direction="row" alignItems="center" spacing={2}>
@@ -302,7 +305,7 @@ export default function Transaction() {
                   </TableContainer>
                 </Scrollbar>
 
-                <TablePagination
+                {/* <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={transactions.length}
@@ -310,10 +313,10 @@ export default function Transaction() {
                   page={page}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                /> */}
               </Card>
             </Container>
-            <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar} load={loadTransactions}/>
+            <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar} load={loadTransactions} />
           </>);
         }}
       </AppContext.Consumer>

@@ -18,6 +18,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { isNull } from 'lodash';
 import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+
 
 const ACTIONS = {
     SET_NAME: 'SET_NAME',
@@ -30,7 +32,7 @@ const transactionsReducer = (curTrasactionState, action) => {
         case ACTIONS.SET_NAME:
             return { ...curTrasactionState, name: action.name }
         case ACTIONS.SET_CATEGORIES:
-            return { ...curTrasactionState, categories: action.categories }
+            return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
         default:
             throw new Error('Should not get here');
     }
@@ -39,8 +41,8 @@ const transactionsReducer = (curTrasactionState, action) => {
 export default function CategoryDialog(props) {
     //   const [open, setOpen] = useState(false);
     const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
-    const [{ name, categories }, dispatchTransactions] = useReducer(transactionsReducer,
-        { name: "", categories: [] });
+    const [{ name, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
+        { name: "", categories: [], categoryMap: {} });
 
     //   const handleClickOpen = () => {
     //     setOpen(true);
@@ -79,32 +81,25 @@ export default function CategoryDialog(props) {
     useEffect(() => {
         switch (reqExtra) {
             case APP_CONFIG.APIS.CREATE_CATEGORY:
-                if (data) {
+                if (data && !error) {
                     props.handleClose();
+                    props.handleSnackbar("Successfully created category!", "success");
                 } else if (error) {
-
+                    props.handleSnackbar("Failed to create category!", "error");
                 }
                 break;
             case APP_CONFIG.APIS.GET_CATEGORIES:
-
                 if (data) {
-
-                } else if (error) {
-
-                }
-                const TODO_TEST_CATEGORIES = [
-                    {
-                        name: "Test Cat",
-                        isCustom: true,
-                        categoryId: 1
-                    },
-                    {
-                        name: "Test Cat2",
-                        isCustom: false,
-                        categoryId: 2
+                    var categoryMapTemp = {};
+                    if (data.length) {
+                        data.forEach(e => {
+                            categoryMapTemp[e.categoryId] = e;
+                        });
                     }
-                ];
-                dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: TODO_TEST_CATEGORIES });
+                    dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
+                } else if (error) {
+                    props.handleSnackbar("Failed to fetch categories!", "error");
+                }
                 break;
             default:
                 break;
@@ -116,8 +111,9 @@ export default function CategoryDialog(props) {
             <DialogTitle>Add/Remove Categories</DialogTitle>
             <DialogContent>
                 <FormControl fullWidth sx={{ m: 2 }}>
+
                     <Stack direction="row"
-                        justifyContent="space-between"
+                        justifyContent="flex-start"
                         alignItems="center" spacing={2}>
                         <span>
                             <InputLabel htmlFor="outlined-adornment-category">Category Name</InputLabel>
@@ -130,7 +126,7 @@ export default function CategoryDialog(props) {
                             />
                         </span>
                         <span>
-                            <Button variant="outlined" startIcon={<AddIcon />}>
+                            <Button variant="outlined" startIcon={<AddIcon />} onClick={createCategory}>
                                 Create New
                             </Button>
                         </span>
@@ -139,12 +135,15 @@ export default function CategoryDialog(props) {
 
                 </FormControl>
                 <Divider />
-                <div style={{padding:10}}>
+                <div style={{ padding: 10 }}>
                     <Typography variant="button" display="block" gutterBottom>
                         Categories
                     </Typography>
+                    <div>
+                        {isLoading && <LinearProgress />}
+                    </div>
                     <List>
-                        {categories.map(category => {
+                        {categories && categories.length ? categories.map(category => {
                             return (<ListItem
                                 secondaryAction={
                                     category.isCustom ?
@@ -163,7 +162,9 @@ export default function CategoryDialog(props) {
                                     primary={category.name}
                                 />
                             </ListItem>);
-                        })}
+                        }) : <span style={{textAlign: 'center'}}><Typography variant="caption" display="block" gutterBottom>
+                            Nothing to show
+                        </Typography></span>}
                     </List>
                 </div>
             </DialogContent>
