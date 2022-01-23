@@ -37,6 +37,8 @@ const transactionsReducer = (curTrasactionState, action) => {
       return { ...curTrasactionState, category: action.category }
     case ACTIONS.SET_CATEGORIES:
       return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
+    case ACTIONS.HANDLE_RESET:
+      return { ...curTrasactionState, description: "", amount: 0.0, isIncome: true, month: null, category: null }
     default:
       throw new Error('Should not get here');
   }
@@ -46,18 +48,32 @@ export default function TransactionDialog(props) {
   const [open, setOpen] = useState(false);
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ description, amount, isIncome, month, category, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
-    { description: "", amount: 0.0, isIncome: true, month: "JANUARY", category: null, categories: [], categoryMap: {} });
+    { description: "", amount: 0.0, isIncome: true, month: null, category: null, categories: [], categoryMap: {} });
 
 
+  const handleConfirm = () => {
+    props.data.transactionId? updateTransaction():createTransaction();
+  };
   const createTransaction = () => {
     var payload = {
       "description": description,
       "amount": amount,
       "categoryId": category,
-      "month": month.value,
+      "month": month? month.value : null,
       "isIncome": isIncome
     };
     sendRequest(APP_CONFIG.APIS.ADD_TRANSACTION, 'POST', payload, APP_CONFIG.APIS.ADD_TRANSACTION);
+  };
+
+  const updateTransaction = () => {
+    var payload = {
+      "description": description,
+      "amount": amount,
+      "categoryId": category,
+      "month": month? month.value : null,
+      "isIncome": isIncome
+    };
+    sendRequest(APP_CONFIG.APIS.UPDATE_TRANSACTION+"/"+props.data.transactionId, 'POST', payload, APP_CONFIG.APIS.UPDATE_TRANSACTION);
   };
 
   const getCategories = () => {
@@ -107,6 +123,15 @@ export default function TransactionDialog(props) {
           props.handleSnackbar("Failed to create transaction!", "error");
         }
         break;
+        case APP_CONFIG.APIS.UPDATE_TRANSACTION:
+          if (data && !error) {
+            props.handleSnackbar("Successfully updated transaction!", "success");
+            handleClose();
+            props.load();
+          } else if (error) {
+            props.handleSnackbar("Failed to update transaction!", "error");
+          }
+          break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
         if (data) {
           var categoryMapTemp = {};
@@ -128,12 +153,18 @@ export default function TransactionDialog(props) {
   useEffect(() => {
     if (props.open) {
       getCategories();
+    } else {
+      dispatchTransactions({ type: ACTIONS.HANDLE_RESET});
     }
   }, [props.open]);
 
+  useEffect(() => {
+    
+  }, [props.data]);
+
   return (
     <Dialog fullWidth maxWidth={'lg'} open={props.open} onClose={handleClose}>
-      <DialogTitle>New Transaction</DialogTitle>
+      <DialogTitle>{props.data.transactionId? "Update Transaction" : "New Transaction"}</DialogTitle>
       <DialogContent>
         <Box
           component="form"
@@ -237,7 +268,7 @@ export default function TransactionDialog(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button disabled={!category} variant="contained" onClick={createTransaction}>Create</Button>
+        <Button  variant="contained" onClick={handleConfirm}>{props.data.transactionId? "Update" : "Create" }</Button>
       </DialogActions>
     </Dialog>
   );

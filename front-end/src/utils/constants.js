@@ -15,9 +15,21 @@ export const getMonths = () => {
 
 export const getMonthForConstant = (constant) => {
     var month = MONTHS[constant];
-    if(month){
+    if (month) {
         return month.title;
     } else {
         return "Not specified";
+    }
+};
+
+export const getMonthObjForConstant = (constant) => {
+    var month = MONTHS[constant];
+    if (month) {
+        return month;
+    } else {
+        return {
+            "value": "NO_SPECIFIED",
+            "title": "Not specified"
+        };
     }
 };
