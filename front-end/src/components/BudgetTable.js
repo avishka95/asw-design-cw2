@@ -38,12 +38,12 @@ function createData(month, income, expense) {
 }
 
 function Row(props) {
-  const { row } = props;
+  const { row, categoryMap } = props;
   const [open, setOpen] = useState(false);
 
   useEffect(()=>{
 
-  },[row]);
+  },[row, props.categoryMap]);
 
   return (
     <>
@@ -78,9 +78,9 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.categorylist.map((categoryRow) => (
-                    <TableRow key={categoryRow.name}>
+                    <TableRow key={categoryRow.categoryId}>
                       <TableCell component="th" scope="row">
-                        {categoryRow.name}
+                        {categoryMap[categoryRow.categoryId]? categoryMap[categoryRow.categoryId].name : null}
                       </TableCell>
                       <TableCell>{categoryRow.spent}</TableCell>
                       <TableCell align="right">{categoryRow.spent}</TableCell>
@@ -135,8 +135,7 @@ export default function BudgetTable(props) {
   // }, [data, reqExtra, isOpen, isLoading, error]);
 
   useEffect(()=>{
-
-  },[props.budgets]);
+  },[props.budgets, props.categoryMap]);
 
   return (
     <TableContainer component={Paper}>
@@ -152,7 +151,7 @@ export default function BudgetTable(props) {
         </TableHead>
         <TableBody>
           {props.budgets.map((row) => (
-            <Row key={row.id} row={row} />
+            <Row key={row.id} row={row} categoryMap={props.categoryMap}/>
           ))}
         </TableBody>
       </Table>

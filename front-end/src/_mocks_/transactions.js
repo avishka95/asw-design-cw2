@@ -3,11 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 const transactions = [
   {
     transactionId: uuidv4(),
-    description: 'TEST',
+    description: 'Abc',
     amount: 1.0,
     isIncome: true,
     month: "JANUARY",
-    category: "TEST"
+    categoryId: 1
   },
   {
     transactionId: uuidv4(),
@@ -15,7 +15,7 @@ const transactions = [
     amount: 12.0,
     isIncome: false,
     month: "JANUARY",
-    category: "TEST"
+    categoryId: 2
   },
   {
     transactionId: uuidv4(),
@@ -23,7 +23,7 @@ const transactions = [
     amount: 112.0,
     isIncome: true,
     month: "JANUARY",
-    category: "TEST"
+    categoryId: 1
   },
   {
     transactionId: uuidv4(),
@@ -31,7 +31,7 @@ const transactions = [
     amount: 10.0,
     isIncome: false,
     month: "JANUARY",
-    category: "TEST"
+    categoryId: 3
   }
 ];
 

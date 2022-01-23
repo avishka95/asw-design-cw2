@@ -15,7 +15,7 @@ import NotFound from './pages/Page404';
 
 // ----------------------------------------------------------------------
 
-export default function Router() {
+export default function Router(props) {
   return useRoutes([
     {
       path: '/dashboard',
@@ -23,8 +23,8 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/transaction" replace /> },
         // { path: 'app', element: <DashboardApp /> },
-        { path: 'transaction', element: <Transaction /> },
-        { path: 'budget', element: <Budgets /> },
+        { path: 'transaction', element: <Transaction handleSnackbar={props.handleSnackbar}/> },
+        { path: 'budget', element: <Budgets handleSnackbar={props.handleSnackbar}/> },
         // { path: 'user', element: <User /> },
         // { path: 'products', element: <Products /> },
         // { path: 'blog', element: <Blog /> }

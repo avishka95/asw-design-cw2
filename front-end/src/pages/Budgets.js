@@ -18,7 +18,8 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  LinearProgress
 } from '@mui/material';
 // components
 import useHttp from 'src/utils/http';
@@ -29,6 +30,7 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import AppContext from 'src/context/AppContext';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import CATEGORIES_LIST from '../_mocks_/categories';
 //
 import BUDGET_LIST from '../_mocks_/budgets';
 import BudgetDialog from 'src/dialogs/BudgetDialog';
@@ -81,6 +83,7 @@ function applySortFilter(array, comparator, query) {
 
 const ACTIONS = {
   SET_BUDGETS: 'SET_BUDGETS',
+  SET_CATEGORIES: 'SET_CATEGORIES',
   HANDLE_RESET: 'HANDLE_RESET',
 }
 
@@ -88,16 +91,18 @@ const transactionsReducer = (curTrasactionState, action) => {
   switch (action.type) {
     case ACTIONS.SET_BUDGETS:
       return { ...curTrasactionState, budgets: action.budgets }
+    case ACTIONS.SET_CATEGORIES:
+      return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap };
     default:
       throw new Error('Should not get here');
   }
 }
 
-export default function Budget() {
+export default function Budget(props) {
   const [page, setPage] = useState(0);
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
-  const [{ budgets }, dispatchTransactions] = useReducer(transactionsReducer,
-    { budgets: [] });
+  const [{ budgets, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
+    { budgets: [], categories: [], categoryMap: {} });
   const [openCategory, setOpenCategory] = useState(false);
   const [openBudget, setOpenBudget] = useState(false);
   const [order, setOrder] = useState('asc');
@@ -108,6 +113,10 @@ export default function Budget() {
 
   const loadBudgets = () => {
     sendRequest(APP_CONFIG.APIS.GET_BUDGETS, 'GET', null, APP_CONFIG.APIS.GET_BUDGETS);
+  };
+
+  const getCategories = () => {
+    sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
   };
 
   const openBudgetCategory = () => {
@@ -185,11 +194,29 @@ export default function Budget() {
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_BUDGETS:
-        if (data) {
-
+        if (data && !error) {
+          dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: data });
+        } else if(error){
+          props.handleSnackbar("Failed to fetch budgets!", "error");
         }
         //TODO
-        dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: BUDGET_LIST });
+        
+        break;
+      case APP_CONFIG.APIS.GET_CATEGORIES:
+        //TODO
+        var data = CATEGORIES_LIST;
+        if (data) {
+          var categoryMapTemp = {};
+          if (data.length) {
+            data.forEach(e => {
+              categoryMapTemp[e.categoryId] = e;
+            });
+          }
+
+          dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
+        } else if (error) {
+          props.handleSnackbar("Failed to fetch categories!", "error");
+        }
         break;
       default:
         break;
@@ -198,6 +225,7 @@ export default function Budget() {
 
   useEffect(() => {
     loadBudgets();
+    getCategories();
   }, [])
 
   return (
@@ -211,6 +239,7 @@ export default function Budget() {
                   <Typography variant="h4" gutterBottom>
                     Budgets
                   </Typography>
+                  
                   <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
                     <Button
                       onClick={openBudgetCategory}
@@ -218,7 +247,7 @@ export default function Budget() {
                       component={RouterLink}
                       color="warning"
                       to="#"
-                      // startIcon={<Icon icon={plusFill} />}
+                    // startIcon={<Icon icon={plusFill} />}
                     >
                       Add/Remove Categories
                     </Button>
@@ -235,6 +264,9 @@ export default function Budget() {
                 </Stack>
 
                 <Card>
+                <div>
+                  {isLoading && <LinearProgress />}
+                </div>
                   {/* <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
@@ -242,10 +274,10 @@ export default function Budget() {
           /> */}
 
                   <Scrollbar>
-                    <BudgetTable budgets={budgets} />
+                    <BudgetTable budgets={budgets} categoryMap={categoryMap}/>
                   </Scrollbar>
 
-                  <TablePagination
+                  {/* <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
                     count={BUDGET_LIST.length}
@@ -253,11 +285,11 @@ export default function Budget() {
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
+                  /> */}
                 </Card>
               </Container>
-              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar}/>
-              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} />
+              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} />
+              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar}/>
             </>
           );
         }}

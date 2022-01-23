@@ -9,7 +9,7 @@ const budgets = [
         totalBudget: 7.0,
         categorylist: [
             {
-                categoryId: uuidv4(),
+                categoryId: 1,
                 name: "String",
                 budget: 2.0,
                 spent: 1.0
@@ -25,7 +25,7 @@ const budgets = [
         totalBudget: 7.0,
         categorylist: [
             {
-                categoryId: uuidv4(),
+                categoryId: 2,
                 name: "String",
                 budget: 2.0,
                 spent: 1.0
@@ -41,7 +41,7 @@ const budgets = [
         totalBudget: 7.0,
         categorylist: [
             {
-                categoryId: uuidv4(),
+                categoryId: 3,
                 name: "String",
                 budget: 2.0,
                 spent: 1.0
@@ -58,7 +58,7 @@ const budgets = [
         categorylist: [
             {
                 categoryId: uuidv4(),
-                name: "String",
+                name: 2,
                 budget: 2.0,
                 spent: 1.0
 

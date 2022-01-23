@@ -44,7 +44,7 @@ export default function App() {
         <ScrollToTop />
         <GlobalStyles />
         <BaseOptionChartStyle />
-        <Router />
+        <Router handleSnackbar={handleSnackbar} />
         <ConsecutiveSnackbars snackbar={snackbar} handleSnackbar={handleSnackbar} />
         <ConfirmationDialog data={confirmation} handleConfirmation={handleConfirmation}/>
       </AppContext.Provider>
