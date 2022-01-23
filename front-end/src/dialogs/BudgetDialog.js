@@ -66,7 +66,7 @@ export default function BudgetDialog(props) {
   };
 
   return (
-      <Dialog maxWidth open={props.open} onClose={handleClose}>
+      <Dialog fullWidth maxWidth="sm" open={props.open} onClose={handleClose}>
         <DialogTitle>New Budget</DialogTitle>
         <DialogContent>
           <Box

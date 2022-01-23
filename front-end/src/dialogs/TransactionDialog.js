@@ -8,7 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
-import { FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
 import { APP_CONFIG } from 'src/config';
 import useHttp from 'src/utils/http';
@@ -120,38 +120,52 @@ export default function TransactionDialog(props) {
             spacing={2}
           >
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ m: 1 }}>
-                <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-amount"
-                  type="number"
-                  onChange={handleAmount}
-                  value={amount}
-                  inputProps={{
-                    maxLength: 13,
-                    step: "1",
-                    min: 0
-                  }}
-                  startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                  label="Amount"
-                />
-              </FormControl>
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={2}
+              >
+                <span>
+                  <FormControl fullWidth sx={{ m: 1 }}>
+                    <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-amount"
+                      type="number"
+                      sx={{width:400}}
+                      onChange={handleAmount}
+                      value={amount}
+                      inputProps={{
+                        maxLength: 13,
+                        step: "1",
+                        min: 0
+                      }}
+                      startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                      label="Amount"
+                    />
+                  </FormControl>
+                </span>
+                <span>
+                  <ButtonGroup color={isIncome ? "error" : "primary"} aria-label="income and expense button group">
+                    <Button onClick={handleIsIncome} variant={isIncome ? "contained" : "outlined"} color="primary" key="income">Income</Button>
+                    <Button onClick={handleIsExpense} variant={isIncome ? "outlined" : "contained"} color="error" key="expense">Expense</Button>
+                  </ButtonGroup>
+                </span>
+              </Stack>
+
             </Grid>
             <Grid item xs={6}>
-            <ButtonGroup color={isIncome ? "error" : "primary"} aria-label="income and expense button group">
-                <Button onClick={handleIsIncome} variant={isIncome ? "contained" : "outlined"} color="primary" key="income">Income</Button>
-                <Button onClick={handleIsExpense} variant={isIncome ? "outlined" : "contained"} color="error" key="expense">Expense</Button>
-              </ButtonGroup>
+
             </Grid>
             <Grid item xs={3}>
               <TextField
-              variant="outlined"
+                variant="outlined"
                 // required
                 id="description-required"
                 label="Description"
                 value={description}
                 onChange={handleDescription}
-                // defaultValue="Transaction"
+              // defaultValue="Transaction"
               />
             </Grid>
             <Grid item xs={3}>

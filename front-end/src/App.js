@@ -9,12 +9,21 @@ import ScrollToTop from './components/ScrollToTop';
 import { BaseOptionChartStyle } from './components/charts/BaseOptionChart';
 import ConsecutiveSnackbars from './components/Snackbar';
 import AppContext from './context/AppContext';
+import ConfirmationDialog from './dialogs/ConfirmationDialog';
 
 // ----------------------------------------------------------------------
 
 export default function App() {
   const [snackbar, setSnackbar] = useState({ message: "TEST", severity: "error" });
+  const [confirmation, setConfirmation] = useState(null);
 
+  const handleConfirmation = (message, action) => {
+    if (message && action) {
+      setConfirmation({ message, action });
+    } else {
+      setConfirmation(null);
+    }
+  };
 
   const handleSnackbar = (message, severity) => {
     if (message) {
@@ -28,13 +37,15 @@ export default function App() {
   return (
     <ThemeConfig>
       <AppContext.Provider value={{
-        handleSnackbar: handleSnackbar
+        handleSnackbar: handleSnackbar,
+        handleConfirmation: handleConfirmation
       }}>
         <ScrollToTop />
         <GlobalStyles />
         <BaseOptionChartStyle />
         <Router />
         <ConsecutiveSnackbars snackbar={snackbar} handleSnackbar={handleSnackbar} />
+        <ConfirmationDialog data={confirmation} handleConfirmation={handleConfirmation}/>
       </AppContext.Provider>
     </ThemeConfig>
   );

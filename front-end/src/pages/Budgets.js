@@ -218,9 +218,9 @@ export default function Budget() {
                       component={RouterLink}
                       color="warning"
                       to="#"
-                      startIcon={<Icon icon={plusFill} />}
+                      // startIcon={<Icon icon={plusFill} />}
                     >
-                      New Category
+                      Add/Remove Categories
                     </Button>
                     <Button
                       onClick={handleOpenBudget}
