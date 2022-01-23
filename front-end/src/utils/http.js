@@ -27,7 +27,7 @@ const useHttp = () => {
             dispatchHTTP({ type: 'SEND', extra: reqExtra });
             fetch(encodedUrl, {
                 method: method,
-                body: (body ? body : null),
+                body: (body ? JSON.stringify(body) : null),
                 headers: {
                     'Content-Type': 'application/json',
                 },

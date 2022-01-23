@@ -14,11 +14,12 @@ import ConfirmationDialog from './dialogs/ConfirmationDialog';
 // ----------------------------------------------------------------------
 
 export default function App() {
-  const [snackbar, setSnackbar] = useState({ message: "TEST", severity: "error" });
+  const [snackbar, setSnackbar] = useState(null);
   const [confirmation, setConfirmation] = useState(null);
 
   const handleConfirmation = (message, action) => {
     if (message && action) {
+      
       setConfirmation({ message, action });
     } else {
       setConfirmation(null);

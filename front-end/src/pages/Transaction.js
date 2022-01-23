@@ -277,12 +277,7 @@ export default function Transaction() {
 
                                 <TableCell align="right">
                                   <UserMoreMenu onDelete={() => {
-                                    context.handleConfirmation(
-                                      {
-                                        message: "Test",
-                                        action: () => { }
-                                      }
-                                    )
+                                    context.handleConfirmation("Do you want to delete this transaction?", () => { })
                                   }} />
                                 </TableCell>
                               </TableRow>
@@ -318,7 +313,7 @@ export default function Transaction() {
                 />
               </Card>
             </Container>
-            <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar} />
+            <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar} load={loadTransactions}/>
           </>);
         }}
       </AppContext.Consumer>

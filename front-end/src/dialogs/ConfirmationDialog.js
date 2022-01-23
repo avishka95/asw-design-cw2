@@ -13,29 +13,35 @@ export default function ConfirmationDialog(props) {
     props.handleConfirmation()
   };
 
+  const handleAction = () => {
+    props.data.action();
+    handleClose();
+  };
+
   useEffect(()=>{
 
   },[props.data])
 
   return (
       <Dialog
+      fullWidth
+      maxWidth="sm"
         open={Boolean(props.data)}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {props.data?.message ? props.data.message : ""}
+          Confirm action
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
+          {props.data?.message ? props.data.message : ""}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          {props.data?.action &&  <Button onClick={props.data.action} autoFocus>
+          {props.data?.action &&  <Button  variant="contained" onClick={handleAction} autoFocus>
             Confirm
           </Button>}
         </DialogActions>

@@ -19,6 +19,7 @@ const ACTIONS = {
   SET_IS_INCOME: 'SET_IS_INCOME',
   SET_MONTH: 'SET_MONTH',
   SET_CATEGORY: 'SET_CATEGORY',
+  SET_CATEGORIES: 'SET_CATEGORIES',
   HANDLE_RESET: 'HANDLE_RESET',
 }
 
@@ -34,6 +35,8 @@ const transactionsReducer = (curTrasactionState, action) => {
       return { ...curTrasactionState, month: action.month }
     case ACTIONS.SET_CATEGORY:
       return { ...curTrasactionState, category: action.category }
+    case ACTIONS.SET_CATEGORIES:
+      return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
     default:
       throw new Error('Should not get here');
   }
@@ -42,11 +45,23 @@ const transactionsReducer = (curTrasactionState, action) => {
 export default function TransactionDialog(props) {
   const [open, setOpen] = useState(false);
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
-  const [{ description, amount, isIncome, month, category }, dispatchTransactions] = useReducer(transactionsReducer,
-    { description: "", amount: 0.0, isIncome: true, month: "JANUARY", category: "JANUARY" });
+  const [{ description, amount, isIncome, month, category, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
+    { description: "", amount: 0.0, isIncome: true, month: "JANUARY", category: null, categories: [], categoryMap: {} });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+
+  const createTransaction = () => {
+    var payload = {
+      "description": description,
+      "amount": amount,
+      "categoryId": category,
+      "month": month.value,
+      "isIncome": isIncome
+    };
+    sendRequest(APP_CONFIG.APIS.ADD_TRANSACTION, 'POST', payload, APP_CONFIG.APIS.ADD_TRANSACTION);
+  };
+
+  const getCategories = () => {
+    sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
   };
 
 
@@ -77,28 +92,44 @@ export default function TransactionDialog(props) {
   };
 
   const handleCategory = (event) => {
-    dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
+    console.log("TODO handleCategory",event.target.value)
+    dispatchTransactions({ type: ACTIONS.SET_CATEGORY, category: event.target.value });
   };
 
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.ADD_TRANSACTION:
-        if (data) {
-
+        if (data && !error) {
+          props.handleSnackbar("Successfully created transaction!", "success");
+          handleClose();
+          props.load();
+        } else if (error) {
+          props.handleSnackbar("Failed to create transaction!", "error");
         }
-        //TODO
-        // dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST });
-        props.handleSnackbar({
-          message: "Test message",
-          severity: "success"
-        });
+        break;
+      case APP_CONFIG.APIS.GET_CATEGORIES:
+        if (data ) {
+          var categoryMapTemp = {};
+          if (data.length) {
+            data.forEach(e => {
+              categoryMapTemp[e.categoryId] = e;
+            });
+          }
+          dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
+        } else if (error) {
+          props.handleSnackbar("Failed to fetch categories!", "error");
+        }
         break;
       default:
         break;
     }
   }, [data, reqExtra, isOpen, isLoading, error]);
 
-  useEffect(() => { }, [props.open]);
+  useEffect(() => { 
+    if(props.open){
+      getCategories();
+    }
+  }, [props.open]);
 
   return (
     <Dialog fullWidth maxWidth={'lg'} open={props.open} onClose={handleClose}>
@@ -132,7 +163,7 @@ export default function TransactionDialog(props) {
                     <OutlinedInput
                       id="outlined-adornment-amount"
                       type="number"
-                      sx={{width:400}}
+                      sx={{ width: 400 }}
                       onChange={handleAmount}
                       value={amount}
                       inputProps={{
@@ -190,12 +221,12 @@ export default function TransactionDialog(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  // value={age}
+                  value={category}
                   label="Category"
-                // onChange={handleChange}
+                onChange={handleCategory}
                 >
-                  {getMonths().map(e => {
-                    return (<MenuItem value={e}>{e.title}</MenuItem>);
+                  {categories.map(e => {
+                    return (<MenuItem value={e.categoryId}>{e.name}</MenuItem>);
                   })}
                 </Select>
               </FormControl>
@@ -206,7 +237,7 @@ export default function TransactionDialog(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleClose}>Create</Button>
+        <Button disabled={!category} variant="contained" onClick={createTransaction}>Create</Button>
       </DialogActions>
     </Dialog>
   );
