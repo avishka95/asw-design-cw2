@@ -79,7 +79,7 @@ export default function TransactionDialog(props) {
   useEffect(() => { }, [props.open]);
 
   return (
-    <Dialog fullWidth maxWidth open={props.open} onClose={handleClose}>
+    <Dialog fullWidth maxWidth={'lg'} open={props.open} onClose={handleClose}>
       <DialogTitle>New Transaction</DialogTitle>
       <DialogContent>
         <Box

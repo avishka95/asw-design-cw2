@@ -78,14 +78,14 @@ function applySortFilter(array, comparator, query) {
 }
 
 const ACTIONS = {
-  SET_LOAD_DATA: 'SET_LOAD_DATA',
+  SET_TRANSACTIONS: 'SET_TRANSACTIONS',
   HANDLE_RESET: 'HANDLE_RESET',
 }
 
 const transactionsReducer = (curTrasactionState, action) => {
   switch (action.type) {
-    case ACTIONS.SET_DESCRIPTION:
-      return { ...curTrasactionState, description: action.description }
+    case ACTIONS.SET_TRANSACTIONS:
+      return { ...curTrasactionState, transactions: action.transactions }
     default:
       throw new Error('Should not get here');
   }
@@ -93,8 +93,8 @@ const transactionsReducer = (curTrasactionState, action) => {
 
 export default function Transaction() {
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
-  const [{ description }, dispatchTransactions] = useReducer(transactionsReducer,
-    { description: ""});
+  const [{ transactions }, dispatchTransactions] = useReducer(transactionsReducer,
+    { transactions: []});
    const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -123,7 +123,7 @@ export default function Transaction() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = TRANSACTION_LIST.map((n) => n.name);
+      const newSelecteds = transactions.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -161,32 +161,38 @@ export default function Transaction() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - TRANSACTION_LIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactions.length) : 0;
 
-  const filteredUsers = applySortFilter(
-    TRANSACTION_LIST,
+  const filteredTransactions = applySortFilter(
+    transactions,
     getComparator(order, orderBy),
     filterName
   );
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredTransactions.length === 0;
 
   useEffect(() => {
     switch (reqExtra) {
-      case APP_CONFIG.APIS.TRANSACTIONS:
+      case APP_CONFIG.APIS.GET_TRANSACTIONS:
         if (data) {
-
+          
         }
+        //TODO
+        dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST });
         break;
       default:
         break;
     }
   }, [data, reqExtra, isOpen, isLoading, error]);
 
+  useEffect(()=>{
+    loadTransactions();
+  },[]);
+
   return (
     <Page title="Transactions | Minimal-UI">
       <Container>
-        <>{console.log('TODO', TRANSACTION_LIST)}</>
+        <>{console.log('TODO', transactions)}</>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Transactions
@@ -216,13 +222,13 @@ export default function Transaction() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={TRANSACTION_LIST.length}
+                  rowCount={transactions.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers
+                  {filteredTransactions
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const { id, description, amount, isIncome, category } = row;
@@ -293,7 +299,7 @@ export default function Transaction() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={TRANSACTION_LIST.length}
+            count={transactions.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
