@@ -27,10 +27,12 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import TransactionDialog from '../dialogs/TransactionDialog';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import AppContext from '../context/AppContext';
 //
 import TRANSACTION_LIST from '../_mocks_/transactions';
 import useHttp from 'src/utils/http';
 import { APP_CONFIG } from 'src/config';
+import { getMonthForConstant } from 'src/utils/constants';
 
 // ----------------------------------------------------------------------
 
@@ -39,10 +41,10 @@ function ccyFormat(num) {
 }
 
 const TABLE_HEAD = [
-  { id: 'description', label: 'Description', alignRight: false },
-  { id: 'amount', label: 'Amount', alignRight: false },
-  { id: 'month', label: 'Month', alignRight: false },
-  { id: 'category', label: 'Category', alignRight: false },
+  { id: 'description', label: 'Description', alignCenter: true },
+  { id: 'amount', label: 'Amount', alignCenter: true },
+  { id: 'month', label: 'Month', alignCenter: true },
+  { id: 'category', label: 'Category', alignCenter: true },
   { id: '' }
 ];
 
@@ -94,8 +96,8 @@ const transactionsReducer = (curTrasactionState, action) => {
 export default function Transaction() {
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ transactions }, dispatchTransactions] = useReducer(transactionsReducer,
-    { transactions: []});
-   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
+    { transactions: [] });
+  const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -175,7 +177,7 @@ export default function Transaction() {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_TRANSACTIONS:
         if (data) {
-          
+
         }
         //TODO
         dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST });
@@ -185,129 +187,135 @@ export default function Transaction() {
     }
   }, [data, reqExtra, isOpen, isLoading, error]);
 
-  useEffect(()=>{
+  useEffect(() => {
     loadTransactions();
-  },[]);
+  }, []);
 
   return (
     <Page title="Transactions | Minimal-UI">
-      <Container>
-        <>{console.log('TODO', transactions)}</>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Transactions
-          </Typography>
-          <Button
-            onClick={handleOpenTransactionDialog}
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Icon icon={plusFill} />}
-          >
-            New Transactions
-          </Button>
-        </Stack>
+      <AppContext.Consumer>
+        {context => {
+          return (<>
+            <Container>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography variant="h4" gutterBottom>
+                  Transactions
+                </Typography>
+                <Button
+                  onClick={handleOpenTransactionDialog}
+                  variant="contained"
+                  component={RouterLink}
+                  to="#"
+                  startIcon={<Icon icon={plusFill} />}
+                >
+                  New Transactions
+                </Button>
+              </Stack>
 
-        <Card>
-          <UserListToolbar
+              <Card>
+                {/* <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-          />
+          /> */}
 
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={transactions.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredTransactions
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const { id, description, amount, isIncome, category } = row;
-                      const isItemSelected = selected.indexOf(id) !== -1;
+                <Scrollbar>
+                  <TableContainer sx={{ minWidth: 800 }}>
+                    <Table>
+                      <UserListHead
+                        order={order}
+                        orderBy={orderBy}
+                        headLabel={TABLE_HEAD}
+                        rowCount={transactions.length}
+                        numSelected={selected.length}
+                        onRequestSort={handleRequestSort}
+                        onSelectAllClick={handleSelectAllClick}
+                      />
+                      <TableBody>
+                        {filteredTransactions
+                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          .map((row) => {
+                            const { id, description, amount, isIncome, month, category } = row;
+                            const isItemSelected = selected.indexOf(id) !== -1;
 
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          role="checkbox"
-                          selected={isItemSelected}
-                          aria-checked={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isItemSelected}
-                              onChange={(event) => handleClick(event, id)}
-                            />
-                          </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              {/* <Avatar alt={id} src={avatarUrl} /> */}
-                              <Typography variant="subtitle2" noWrap>
-                                {description}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell color="success" align="left">
-                            <Label variant="ghost" color={isIncome ? 'success' : 'error'}>
-                              {ccyFormat(amount)}
-                            </Label>
-                          </TableCell>
-                          <TableCell align="left">{category}</TableCell>
-                          <TableCell align="left">{category}</TableCell>
-                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
-                          {/* <TableCell align="left">
+                            return (
+                              <TableRow
+                                hover
+                                key={id}
+                                tabIndex={-1}
+                                role="checkbox"
+                                selected={isItemSelected}
+                                aria-checked={isItemSelected}
+                              >
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    checked={isItemSelected}
+                                    onChange={(event) => handleClick(event, id)}
+                                  />
+                                </TableCell>
+                                <TableCell component="th" scope="row" padding="none" >
+                                  <Stack direction="row" alignItems="center" spacing={2}>
+                                    {/* <Avatar alt={id} src={avatarUrl} /> */}
+                                    <Typography variant="subtitle2" noWrap>
+                                      {description}
+                                    </Typography>
+                                  </Stack>
+                                </TableCell>
+                                <TableCell color="success" align="center">
+                                  <Label variant="ghost" color={isIncome ? 'success' : 'error'}>
+                                    {ccyFormat(amount)}
+                                  </Label>
+                                </TableCell>
+                                <TableCell align="center">{getMonthForConstant(month)}</TableCell>
+                                <TableCell align="center">{category}</TableCell>
+                                {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
+                                {/* <TableCell align="left">
                             <Label variant="ghost" color={isIncome ? 'success' : 'error'}>
                               {sentenceCase(isIncome ? 'income' : 'expense')}
                             </Label>
                           </TableCell> */}
 
-                          <TableCell align="right">
-                            <UserMoreMenu />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                {isUserNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                                <TableCell align="right">
+                                  <UserMoreMenu />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 53 * emptyRows }}>
+                            <TableCell colSpan={6} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+                      {isUserNotFound && (
+                        <TableBody>
+                          <TableRow>
+                            <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                              <SearchNotFound searchQuery={filterName} />
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      )}
+                    </Table>
+                  </TableContainer>
+                </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={transactions.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
-      </Container>
-      <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} />
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={transactions.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Card>
+            </Container>
+            <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar}/>
+          </>);
+        }}
+      </AppContext.Consumer>
+
     </Page>
   );
 }

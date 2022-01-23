@@ -27,6 +27,7 @@ import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
+import AppContext from 'src/context/AppContext';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import BUDGET_LIST from '../_mocks_/budgets';
@@ -96,7 +97,7 @@ export default function Budget() {
   const [page, setPage] = useState(0);
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ budgets }, dispatchTransactions] = useReducer(transactionsReducer,
-    { budgets: []});
+    { budgets: [] });
   const [openCategory, setOpenCategory] = useState(false);
   const [openBudget, setOpenBudget] = useState(false);
   const [order, setOrder] = useState('asc');
@@ -109,7 +110,7 @@ export default function Budget() {
     sendRequest(APP_CONFIG.APIS.GET_BUDGETS, 'GET', null, APP_CONFIG.APIS.GET_BUDGETS);
   };
 
-  const openBudegtCategory = () => {
+  const openBudgetCategory = () => {
     setOpenCategory(true);
   };
 
@@ -117,11 +118,11 @@ export default function Budget() {
     setOpenCategory(false);
   };
 
-  const openBudegt = () => {
+  const handleOpenBudget = () => {
     setOpenBudget(true);
   };
 
-  const closeBudegt = () => {
+  const handleCloseBudget = () => {
     setOpenBudget(false);
   };
 
@@ -185,7 +186,7 @@ export default function Budget() {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_BUDGETS:
         if (data) {
-          
+
         }
         //TODO
         dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: BUDGET_LIST });
@@ -195,64 +196,73 @@ export default function Budget() {
     }
   }, [data, reqExtra, isOpen, isLoading, error]);
 
-  useEffect(()=>{
+  useEffect(() => {
     loadBudgets();
-  },[])
+  }, [])
 
   return (
     <Page title="Budgets | Minimal-UI">
-      <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Budgets
-          </Typography>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Button
-              onClick={openBudegtCategory}
-              variant="contained"
-              component={RouterLink}
-              color="warning"
-              to="#"
-              startIcon={<Icon icon={plusFill} />}
-            >
-              New Budget Category
-            </Button>
-            <Button
-              onClick={openBudegt}
-              variant="contained"
-              component={RouterLink}
-              to="#"
-              startIcon={<Icon icon={plusFill} />}
-            >
-              New Budget
-            </Button>
-          </Stack>
-        </Stack>
+      <AppContext.Consumer>
+        {context => {
+          return (
+            <>
+              <Container>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                  <Typography variant="h4" gutterBottom>
+                    Budgets
+                  </Typography>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                    <Button
+                      onClick={openBudgetCategory}
+                      variant="contained"
+                      component={RouterLink}
+                      color="warning"
+                      to="#"
+                      startIcon={<Icon icon={plusFill} />}
+                    >
+                      New Category
+                    </Button>
+                    <Button
+                      onClick={handleOpenBudget}
+                      variant="contained"
+                      component={RouterLink}
+                      to="#"
+                      startIcon={<Icon icon={plusFill} />}
+                    >
+                      New Budget
+                    </Button>
+                  </Stack>
+                </Stack>
 
-        <Card>
-          <UserListToolbar
+                <Card>
+                  {/* <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
-          />
+          /> */}
 
-          <Scrollbar>
-            <BudgetTable budgets={budgets}/>
-          </Scrollbar>
+                  <Scrollbar>
+                    <BudgetTable budgets={budgets} />
+                  </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={BUDGET_LIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
-      </Container>
-      <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} />
-      <BudgetDialog open={openBudget} handleClose={closeBudegt} />
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={BUDGET_LIST.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </Card>
+              </Container>
+              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} />
+              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} />
+            </>
+          );
+        }}
+      </AppContext.Consumer>
+
     </Page>
   );
 }

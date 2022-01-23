@@ -10,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import { FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
+import { APP_CONFIG } from 'src/config';
+import useHttp from 'src/utils/http';
 
 const ACTIONS = {
   SET_LOAD_DATA: 'SET_DESCRIPTION',
@@ -39,12 +41,14 @@ const transactionsReducer = (curTrasactionState, action) => {
 
 export default function TransactionDialog(props) {
   const [open, setOpen] = useState(false);
+  const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ description, amount, isIncome, month, category }, dispatchTransactions] = useReducer(transactionsReducer,
     { description: "", amount: 0.0, isIncome: true, month: "JANUARY", category: "JANUARY" });
 
   const handleClickOpen = () => {
     setOpen(true);
   };
+
 
   const handleClose = () => {
     props.handleClose();
@@ -75,6 +79,24 @@ export default function TransactionDialog(props) {
   const handleCategory = (event) => {
     dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
   };
+
+  useEffect(() => {
+    switch (reqExtra) {
+      case APP_CONFIG.APIS.ADD_TRANSACTION:
+        if (data) {
+
+        }
+        //TODO
+        // dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST });
+        props.handleSnackbar({
+          message: "Test message",
+          severity: "success"
+        });
+        break;
+      default:
+        break;
+    }
+  }, [data, reqExtra, isOpen, isLoading, error]);
 
   useEffect(() => { }, [props.open]);
 

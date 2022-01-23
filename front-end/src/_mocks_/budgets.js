@@ -19,7 +19,7 @@ const budgets = [
     },
     {
         id: uuidv4(),
-        month: "JANUARY",
+        month: "FEBRUARY",
         totalIncome: 10.0,
         totalExpense: 5.0,
         totalBudget: 7.0,
@@ -35,7 +35,7 @@ const budgets = [
     },
     {
         id: uuidv4(),
-        month: "JANUARY",
+        month: "MARCH",
         totalIncome: 10.0,
         totalExpense: 5.0,
         totalBudget: 7.0,
@@ -51,7 +51,7 @@ const budgets = [
     },
     {
         id: uuidv4(),
-        month: "JANUARY",
+        month: "APRIL",
         totalIncome: 10.0,
         totalExpense: 5.0,
         totalBudget: 7.0,

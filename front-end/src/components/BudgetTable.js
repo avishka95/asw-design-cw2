@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { getMonthForConstant } from 'src/utils/constants';
+import useHttp from 'src/utils/http';
+import { APP_CONFIG } from 'src/config';
 
 function createData(month, income, expense) {
   return {
@@ -51,16 +54,17 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.month}
+          {getMonthForConstant(row.month)}
         </TableCell>
         <TableCell align="center">{row.totalIncome}</TableCell>
         <TableCell align="center">{row.totalExpense}</TableCell>
+        <TableCell align="center">{row.totalBudget}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
+              <Typography variant="button" gutterBottom component="div">
                 Category Breakdown
               </Typography>
               <Table size="small" aria-label="purchases">
@@ -76,7 +80,7 @@ function Row(props) {
                   {row.categorylist.map((categoryRow) => (
                     <TableRow key={categoryRow.name}>
                       <TableCell component="th" scope="row">
-                        {categoryRow.budget}
+                        {categoryRow.name}
                       </TableCell>
                       <TableCell>{categoryRow.spent}</TableCell>
                       <TableCell align="right">{categoryRow.spent}</TableCell>
@@ -114,6 +118,22 @@ function Row(props) {
 // };
 
 export default function BudgetTable(props) {
+  // const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
+
+  // useEffect(() => {
+  //   switch (reqExtra) {
+  //     case APP_CONFIG.APIS.GET_TRANSACTIONS:
+  //       if (data) {
+
+  //       }
+  //       //TODO
+  //       dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }, [data, reqExtra, isOpen, isLoading, error]);
+
   useEffect(()=>{
 
   },[props.budgets]);

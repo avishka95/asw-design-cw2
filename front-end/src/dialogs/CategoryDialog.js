@@ -8,10 +8,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
-import { FilledInput, FormControl, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Avatar, FilledInput, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemText, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
 import useHttp from '../utils/http';
 import { APP_CONFIG } from 'src/config';
+import IconButton from 'src/theme/overrides/IconButton';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ACTIONS = {
     SET_NAME: 'SET_NAME',
@@ -59,17 +62,17 @@ export default function CategoryDialog(props) {
 
     useEffect(() => {
         switch (reqExtra) {
-          case APP_CONFIG.APIS.CREATE_CATEGORY:
-            if (data) {
-                props.handleClose();
-            } else if(error){
-                
-            }
-            break;
-          default:
-            break;
+            case APP_CONFIG.APIS.CREATE_CATEGORY:
+                if (data) {
+                    props.handleClose();
+                } else if (error) {
+
+                }
+                break;
+            default:
+                break;
         }
-      }, [data, reqExtra, isOpen, isLoading, error]);
+    }, [data, reqExtra, isOpen, isLoading, error]);
 
     return (
         <Dialog fullWidth maxWidth={"md"} open={props.open}>
@@ -84,6 +87,24 @@ export default function CategoryDialog(props) {
                         label="Name"
                     />
                 </FormControl>
+                <List>
+                    <ListItem
+                        secondaryAction={
+                            <IconButton aria-label="expand row" size="small">
+                                <DeleteIcon />
+                            </IconButton>
+                        }
+                    >
+                        <ListItemAvatar>
+                            <Avatar>
+                                <FolderIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary="Single-line item"
+                        />
+                    </ListItem>
+                </List>
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleClose}>Cancel</Button>
