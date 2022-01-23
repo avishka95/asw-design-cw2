@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -21,6 +21,7 @@ import {
   TablePagination
 } from '@mui/material';
 // components
+import useHttp from 'src/utils/http';
 import BudgetTable from '../components/BudgetTable';
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -28,9 +29,10 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
-import TRANSACTION_LIST from '../_mocks_/transactions';
+import BUDGET_LIST from '../_mocks_/budgets';
 import BudgetDialog from 'src/dialogs/BudgetDialog';
 import CategoryDialog from 'src/dialogs/CategoryDialog';
+import { APP_CONFIG } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -76,8 +78,25 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+const ACTIONS = {
+  SET_BUDGETS: 'SET_BUDGETS',
+  HANDLE_RESET: 'HANDLE_RESET',
+}
+
+const transactionsReducer = (curTrasactionState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_BUDGETS:
+      return { ...curTrasactionState, budgets: action.budgets }
+    default:
+      throw new Error('Should not get here');
+  }
+}
+
 export default function Budget() {
   const [page, setPage] = useState(0);
+  const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
+  const [{ budgets }, dispatchTransactions] = useReducer(transactionsReducer,
+    { budgets: []});
   const [openCategory, setOpenCategory] = useState(false);
   const [openBudget, setOpenBudget] = useState(false);
   const [order, setOrder] = useState('asc');
@@ -85,6 +104,10 @@ export default function Budget() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const loadBudgets = () => {
+    sendRequest(APP_CONFIG.APIS.GET_BUDGETS, 'GET', null, APP_CONFIG.APIS.GET_BUDGETS);
+  };
 
   const openBudegtCategory = () => {
     setOpenCategory(true);
@@ -110,7 +133,7 @@ export default function Budget() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = TRANSACTION_LIST.map((n) => n.name);
+      const newSelecteds = BUDGET_LIST.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -148,15 +171,33 @@ export default function Budget() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - TRANSACTION_LIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - BUDGET_LIST.length) : 0;
 
   const filteredUsers = applySortFilter(
-    TRANSACTION_LIST,
+    BUDGET_LIST,
     getComparator(order, orderBy),
     filterName
   );
 
   const isUserNotFound = filteredUsers.length === 0;
+
+  useEffect(() => {
+    switch (reqExtra) {
+      case APP_CONFIG.APIS.GET_BUDGETS:
+        if (data) {
+          
+        }
+        //TODO
+        dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: BUDGET_LIST });
+        break;
+      default:
+        break;
+    }
+  }, [data, reqExtra, isOpen, isLoading, error]);
+
+  useEffect(()=>{
+    loadBudgets();
+  },[])
 
   return (
     <Page title="Budgets | Minimal-UI">
@@ -196,13 +237,13 @@ export default function Budget() {
           />
 
           <Scrollbar>
-            <BudgetTable />
+            <BudgetTable budgets={budgets}/>
           </Scrollbar>
 
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={TRANSACTION_LIST.length}
+            count={BUDGET_LIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

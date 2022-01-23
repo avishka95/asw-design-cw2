@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -36,7 +36,11 @@ function createData(month, income, expense) {
 
 function Row(props) {
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(()=>{
+
+  },[row]);
 
   return (
     <>
@@ -49,8 +53,8 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.month}
         </TableCell>
-        <TableCell align="center">{row.income}</TableCell>
-        <TableCell align="center">{row.expense}</TableCell>
+        <TableCell align="center">{row.totalIncome}</TableCell>
+        <TableCell align="center">{row.totalExpense}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -69,15 +73,15 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
+                  {row.categorylist.map((categoryRow) => (
+                    <TableRow key={categoryRow.name}>
                       <TableCell component="th" scope="row">
-                        {historyRow.date}
+                        {categoryRow.budget}
                       </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
+                      <TableCell>{categoryRow.spent}</TableCell>
+                      <TableCell align="right">{categoryRow.spent}</TableCell>
                       {/* <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
+                        {Math.round(categoryRow.amount * row.price * 100) / 100}
                       </TableCell> */}
                     </TableRow>
                   ))}
@@ -109,15 +113,11 @@ function Row(props) {
 //   }).isRequired
 // };
 
-const rows = [
-  createData('January', 159, 10, 5),
-  createData('February', 237, 10, 5),
-  createData('March', 262, 10, 5),
-  createData('April', 305, 10, 5),
-  createData('May', 356, 10, 5)
-];
+export default function BudgetTable(props) {
+  useEffect(()=>{
 
-export default function BudgetTable() {
+  },[props.budgets]);
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -131,8 +131,8 @@ export default function BudgetTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.month} row={row} />
+          {props.budgets.map((row) => (
+            <Row key={row.id} row={row} />
           ))}
         </TableBody>
       </Table>
