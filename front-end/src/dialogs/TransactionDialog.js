@@ -74,7 +74,7 @@ export default function TransactionDialog(props) {
   };
 
   const handleAmount = (event) => {
-    var value = parseFloat(event.target.value).toFixed(1);
+    var value = parseFloat(event.target.value).toFixed(2);
     dispatchTransactions({ type: ACTIONS.SET_AMOUNT, amount: event.target.value });
   };
 
@@ -92,7 +92,7 @@ export default function TransactionDialog(props) {
   };
 
   const handleCategory = (event) => {
-    console.log("TODO handleCategory",event.target.value)
+    console.log("TODO handleCategory", event.target.value)
     dispatchTransactions({ type: ACTIONS.SET_CATEGORY, category: event.target.value });
   };
 
@@ -108,7 +108,7 @@ export default function TransactionDialog(props) {
         }
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
-        if (data ) {
+        if (data) {
           var categoryMapTemp = {};
           if (data.length) {
             data.forEach(e => {
@@ -125,8 +125,8 @@ export default function TransactionDialog(props) {
     }
   }, [data, reqExtra, isOpen, isLoading, error]);
 
-  useEffect(() => { 
-    if(props.open){
+  useEffect(() => {
+    if (props.open) {
       getCategories();
     }
   }, [props.open]);
@@ -205,7 +205,7 @@ export default function TransactionDialog(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  // value={age}
+                  value={month}
                   label="Month"
                   onChange={handleMonth}
                 >
@@ -223,7 +223,7 @@ export default function TransactionDialog(props) {
                   id="demo-simple-select"
                   value={category}
                   label="Category"
-                onChange={handleCategory}
+                  onChange={handleCategory}
                 >
                   {categories.map(e => {
                     return (<MenuItem value={e.categoryId}>{e.name}</MenuItem>);
