@@ -198,20 +198,19 @@ export default function Transaction(props) {
       case APP_CONFIG.APIS.GET_TRANSACTIONS:
         // var data = TRANSACTION_LIST;
         if (data && !error) {
-          if (data.length) {
+          if (Array.isArray(data)) {
             var tempTransactionMap = {};
             data.forEach(e => {
               tempTransactionMap[e.transactionId] = e;
             })
-            dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: TRANSACTION_LIST, transactionMap: tempTransactionMap });
+            dispatchTransactions({ type: ACTIONS.SET_TRANSACTIONS, transactions: data, transactionMap: tempTransactionMap });
           }
         }
         break;
       case APP_CONFIG.APIS.DELETE_TRANSACTION:
         if (data && !error) {
-          if (data.length) {
             props.handleSnackbar("Successfully deleted transaction!", "success");
-          }
+            loadTransactions();
         } else if (error) {
           props.handleSnackbar("Failed to delete transaction!", "error");
         }
@@ -220,7 +219,7 @@ export default function Transaction(props) {
         // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
-          if (data.length) {
+          if (Array.isArray(data)) {
             data.forEach(e => {
               categoryMapTemp[e.categoryId] = e;
             });

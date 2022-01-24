@@ -211,7 +211,7 @@ export default function Budget(props) {
         // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
-          if (data.length) {
+          if (Array.isArray(data)) {
             data.forEach(e => {
               categoryMapTemp[e.categoryId] = e;
             });

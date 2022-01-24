@@ -50,7 +50,7 @@ export default function CategoryDialog(props) {
 
     const createCategory = () => {
         var payload = {
-            name: name
+            categoryName: name
         };
 
         sendRequest(APP_CONFIG.APIS.CREATE_CATEGORY, 'POST', payload, APP_CONFIG.APIS.CREATE_CATEGORY);
@@ -85,6 +85,7 @@ export default function CategoryDialog(props) {
             case APP_CONFIG.APIS.CREATE_CATEGORY:
                 if (data && !error) {
                     getCategories();
+                    dispatchTransactions({ type: ACTIONS.SET_NAME, name: "" });
                     props.handleSnackbar("Successfully created category!", "success");
                 } else if (error) {
                     props.handleSnackbar("Failed to create category!", "error");
@@ -94,7 +95,7 @@ export default function CategoryDialog(props) {
                 // var data = CATEGORIES_LIST;
                 if (data && !error) {
                     var categoryMapTemp = {};
-                    if (data.length) {
+                    if (Array.isArray(data)) {
                         data.forEach(e => {
                             categoryMapTemp[e.categoryId] = e;
                         });

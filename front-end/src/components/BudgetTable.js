@@ -90,7 +90,7 @@ function Row(props) {
                   {row.categorylist.map((categoryRow) => (
                     <TableRow key={categoryRow.categoryId}>
                       <TableCell component="th" scope="row">
-                        {categoryMap[categoryRow.categoryId] ? categoryMap[categoryRow.categoryId].name : null}
+                        {categoryMap[categoryRow.categoryId] ? categoryMap[categoryRow.categoryId].categoryName : null}
                       </TableCell>
                       <TableCell>{ccyFormat(categoryRow.spent)}</TableCell>
                       <TableCell align="center">{ccyFormat(categoryRow.spent)}</TableCell>

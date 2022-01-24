@@ -53,15 +53,11 @@ export default function BudgetDialog(props) {
     const createBudget = () => {
         var payload = {
             month: month?.value ? month?.value : null,
-            categorylist: [
-                {
-                    categoryId: category,
-                    budget: amount
-                }
-            ]
+            categoryId: category,
+            budget: amount
 
         };
-        sendRequest(APP_CONFIG.APIS.ADD_BUDGET, 'GET', payload, APP_CONFIG.APIS.ADD_BUDGET);
+        sendRequest(APP_CONFIG.APIS.ADD_BUDGET, 'POST', payload, APP_CONFIG.APIS.ADD_BUDGET);
     };
 
     const getCategories = () => {
@@ -96,7 +92,7 @@ export default function BudgetDialog(props) {
                 // var data = CATEGORIES_LIST;
                 if (data && !error) {
                     var categoryMapTemp = {};
-                    if (data.length) {
+                    if (Array.isArray(data)) {
                         data.forEach(e => {
                             categoryMapTemp[e.categoryId] = e;
                         });

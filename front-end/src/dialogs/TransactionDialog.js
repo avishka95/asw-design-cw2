@@ -129,6 +129,7 @@ export default function TransactionDialog(props) {
         }
         break;
       case APP_CONFIG.APIS.UPDATE_TRANSACTION:
+        console.log("TODO UPDATE ",error)
         if (data && !error) {
           props.handleSnackbar("Successfully updated transaction!", "success");
           handleClose();
@@ -141,7 +142,7 @@ export default function TransactionDialog(props) {
         // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
-          if (data.length) {
+          if (Array.isArray(data)) {
             data.forEach(e => {
               categoryMapTemp[e.categoryId] = e;
             });

@@ -7,7 +7,7 @@ const httpReducer = (curHttpState, action) => {
         case 'RESPONSE':
             return { ...curHttpState, loading: false, data: action.responseData, extra: action.extra, open: false }
         case 'NO RESPONSE':
-            return { loading: false, extra: action.extra, open: false }
+            return { loading: false, extra: action.extra, open: false, data: {} }
         case 'ERROR':
             return { loading: false, extra: action.extra, error: action.errorMessage }
         case 'CLEAR':
@@ -34,7 +34,14 @@ const useHttp = () => {
             })
                 .then((response) => {
                     if ((response.status === 200 || response.status === 201) && response.body) {
-                        return response.json();
+                        var jsonToReturn = null;
+                        try{
+                            var tryJsonConversion =  response.json();
+                            jsonToReturn = tryJsonConversion;
+                        } catch(e){
+                            jsonToReturn = {};
+                        }
+                        return jsonToReturn;
                     }
                     else if (response.status >= 400) {
                         if (isRetry) {
