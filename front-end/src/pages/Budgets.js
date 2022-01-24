@@ -225,6 +225,7 @@ export default function Budget(props) {
       case APP_CONFIG.APIS.DELETE_BUDGET:
         if (data && !error) {
           loadBudgets();
+          getCategories();
         } else if (error) {
           props.handleSnackbar("Failed to delete budget!", "error");
         }

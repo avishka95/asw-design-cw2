@@ -107,7 +107,7 @@ export default function CategoryDialog(props) {
 
                 case APP_CONFIG.APIS.DELETE_CATEGORY:
                 if (data && !error) {
-                    props.handleClose();
+                    getCategories();
                     props.handleSnackbar("Successfully deleted category!", "success");
                 } else if (error) {
                     props.handleSnackbar("Failed to delete category!", "error");
