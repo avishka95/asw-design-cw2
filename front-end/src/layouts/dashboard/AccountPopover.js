@@ -20,16 +20,16 @@ const MENU_OPTIONS = [
     icon: homeFill,
     linkTo: '/'
   },
-  {
-    label: 'Profile',
-    icon: personFill,
-    linkTo: '#'
-  },
-  {
-    label: 'Settings',
-    icon: settings2Fill,
-    linkTo: '#'
-  }
+  // {
+  //   label: 'Profile',
+  //   icon: personFill,
+  //   linkTo: '#'
+  // },
+  // {
+  //   label: 'Settings',
+  //   icon: settings2Fill,
+  //   linkTo: '#'
+  // }
 ];
 
 // ----------------------------------------------------------------------

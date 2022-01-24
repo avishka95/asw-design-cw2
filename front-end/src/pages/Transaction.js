@@ -218,9 +218,7 @@ export default function Transaction(props) {
         }
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
-        //TODO
-        var data = CATEGORIES_LIST;
-        if (data) {
+        if (data && !error) {
           var categoryMapTemp = {};
           if (data.length) {
             data.forEach(e => {
