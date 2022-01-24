@@ -318,7 +318,7 @@ export default function Transaction(props) {
                                   </Label>
                                 </TableCell>
                                 <TableCell align="center">{getMonthForConstant(month)}</TableCell>
-                                <TableCell align="center">{categoryId && categoryMap[categoryId]? categoryMap[categoryId].name : null}</TableCell>
+                                <TableCell align="center">{categoryId && categoryMap[categoryId]? categoryMap[categoryId].categoryName : null}</TableCell>
                                 {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
                                 {/* <TableCell align="left">
                             <Label variant="ghost" color={isIncome ? 'success' : 'error'}>

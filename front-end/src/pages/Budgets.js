@@ -206,12 +206,9 @@ export default function Budget(props) {
         } else if (error) {
           props.handleSnackbar("Failed to fetch budgets!", "error");
         }
-        //TODO
-
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
-        //TODO
-        var data = CATEGORIES_LIST;
+        // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
           if (data.length) {

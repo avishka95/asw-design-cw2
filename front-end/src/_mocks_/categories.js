@@ -2,19 +2,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 const categories = [
     {
-        name: "Food",
+        categoryName: "Food",
         isCustom: false,
         categoryId: 1,
 
     },
     {
-        name: "Utilities",
+        categoryName: "Utilities",
         isCustom: false,
         categoryId: 2,
 
     },
     {
-        name: "School",
+        categoryName: "School",
         isCustom: true,
         categoryId: 3,
 

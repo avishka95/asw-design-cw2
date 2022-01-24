@@ -138,8 +138,8 @@ export default function TransactionDialog(props) {
         }
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
-        var data = CATEGORIES_LIST;
-        if (data) {
+        // var data = CATEGORIES_LIST;
+        if (data && !error) {
           var categoryMapTemp = {};
           if (data.length) {
             data.forEach(e => {
@@ -266,7 +266,7 @@ export default function TransactionDialog(props) {
                   onChange={handleCategory}
                 >
                   {categories.map(e => {
-                    return (<MenuItem value={e.categoryId}>{e.name}</MenuItem>);
+                    return (<MenuItem value={e.categoryId}>{e.categoryName}</MenuItem>);
                   })}
                 </Select>
               </FormControl>

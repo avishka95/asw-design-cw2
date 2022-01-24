@@ -91,8 +91,8 @@ export default function CategoryDialog(props) {
                 }
                 break;
             case APP_CONFIG.APIS.GET_CATEGORIES:
-                var data = CATEGORIES_LIST;
-                if (data) {
+                // var data = CATEGORIES_LIST;
+                if (data && !error) {
                     var categoryMapTemp = {};
                     if (data.length) {
                         data.forEach(e => {
@@ -168,7 +168,7 @@ export default function CategoryDialog(props) {
                                 <ListItemAvatar>
                                 </ListItemAvatar>
                                 <ListItemText
-                                    primary={category.name}
+                                    primary={category.categoryName}
                                 />
                             </ListItem>);
                         }) : <span style={{textAlign: 'center'}}><Typography variant="caption" display="block" gutterBottom>
