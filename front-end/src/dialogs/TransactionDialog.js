@@ -15,6 +15,8 @@ import useHttp from 'src/utils/http';
 import CurrencyTextField from '@unicef/material-ui-currency-textfield/dist/CurrencyTextField';
 import CurrencyInput from 'src/components/CurrencyInput';
 
+import CATEGORIES_LIST from '../_mocks_/categories';
+
 const ACTIONS = {
   SET_LOAD_DATA: 'SET_DESCRIPTION',
   SET_AMOUNT: 'SET_AMOUNT',
@@ -108,12 +110,10 @@ export default function TransactionDialog(props) {
   };
 
   const handleMonth = (event) => {
-    console.log("TODO handleMonth", event.target.value)
     dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
   };
 
   const handleCategory = (event) => {
-    console.log("TODO handleCategory", event.target.value)
     dispatchTransactions({ type: ACTIONS.SET_CATEGORY, category: event.target.value });
   };
 
@@ -138,6 +138,7 @@ export default function TransactionDialog(props) {
         }
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
+        var data = CATEGORIES_LIST;
         if (data) {
           var categoryMapTemp = {};
           if (data.length) {
@@ -276,7 +277,7 @@ export default function TransactionDialog(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleConfirm}>{props.data.transactionId ? "Update" : "Create"}</Button>
+        <Button disabled={!amount || amount === '0'} variant="contained" onClick={handleConfirm}>{props.data.transactionId ? "Update" : "Create"}</Button>
       </DialogActions>
     </Dialog>
   );

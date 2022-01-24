@@ -19,6 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { isNull } from 'lodash';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
+import CATEGORIES_LIST from '../_mocks_/categories';
 
 
 const ACTIONS = {
@@ -39,18 +40,9 @@ const transactionsReducer = (curTrasactionState, action) => {
 }
 
 export default function CategoryDialog(props) {
-    //   const [open, setOpen] = useState(false);
     const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
     const [{ name, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
         { name: "", categories: [], categoryMap: {} });
-
-    //   const handleClickOpen = () => {
-    //     setOpen(true);
-    //   };
-
-    //   const handleClose = () => {
-    //     setOpen(false);
-    //   };
 
     const handleName = (event) => {
         dispatchTransactions({ type: ACTIONS.SET_NAME, name: event.target.value });
@@ -69,6 +61,16 @@ export default function CategoryDialog(props) {
         sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
     };
 
+    const deleteCategory = (id) => () => {
+        if(id){
+            sendRequest(APP_CONFIG.APIS.DELETE_CATEGORY+"/"+id, 'DELETE', null, APP_CONFIG.APIS.DELETE_CATEGORY);
+        }
+    };
+
+    const handleDeleteCategory = (id) => () => {
+        props.handleConfirmation("Are you sure you want to delete this category?", deleteCategory(id))
+    };
+
     useEffect(() => {
         getCategories();
     }, [props.open])
@@ -82,13 +84,14 @@ export default function CategoryDialog(props) {
         switch (reqExtra) {
             case APP_CONFIG.APIS.CREATE_CATEGORY:
                 if (data && !error) {
-                    props.handleClose();
+                    getCategories();
                     props.handleSnackbar("Successfully created category!", "success");
                 } else if (error) {
                     props.handleSnackbar("Failed to create category!", "error");
                 }
                 break;
             case APP_CONFIG.APIS.GET_CATEGORIES:
+                var data = CATEGORIES_LIST;
                 if (data) {
                     var categoryMapTemp = {};
                     if (data.length) {
@@ -99,6 +102,15 @@ export default function CategoryDialog(props) {
                     dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
                 } else if (error) {
                     props.handleSnackbar("Failed to fetch categories!", "error");
+                }
+                break;
+
+                case APP_CONFIG.APIS.DELETE_CATEGORY:
+                if (data && !error) {
+                    props.handleClose();
+                    props.handleSnackbar("Successfully deleted category!", "success");
+                } else if (error) {
+                    props.handleSnackbar("Failed to delete category!", "error");
                 }
                 break;
             default:
@@ -126,7 +138,7 @@ export default function CategoryDialog(props) {
                             />
                         </span>
                         <span>
-                            <Button variant="outlined" startIcon={<AddIcon />} onClick={createCategory}>
+                            <Button disabled={!name} variant="contained" startIcon={<AddIcon />} onClick={createCategory}>
                                 Create New
                             </Button>
                         </span>
@@ -147,16 +159,13 @@ export default function CategoryDialog(props) {
                             return (<ListItem
                                 secondaryAction={
                                     category.isCustom ?
-                                        <IconButton aria-label="expand row" size="small">
+                                        <IconButton onClick={handleDeleteCategory(category.categoryId)} aria-label="expand row" size="small">
                                             <DeleteIcon />
                                         </IconButton> :
                                         null
                                 }
                             >
                                 <ListItemAvatar>
-                                    {/* <Avatar>
-                                    <FolderIcon />
-                                </Avatar> */}
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={category.name}

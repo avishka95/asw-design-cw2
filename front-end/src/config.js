@@ -10,6 +10,7 @@ export const APP_CONFIG = {
         ADD_BUDGET: API_ENDPOINT + "/addBudget",
         DELETE_BUDGET: API_ENDPOINT + "/deleteBudget",
         GET_CATEGORIES: API_ENDPOINT + "/getCategories",
-        CREATE_CATEGORY: API_ENDPOINT + "/newCategory"
+        CREATE_CATEGORY: API_ENDPOINT + "/newCategory",
+        DELETE_CATEGORY: API_ENDPOINT + "/deleteCategory",
     }
 };

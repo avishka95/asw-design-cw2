@@ -119,8 +119,10 @@ export default function Budget(props) {
     sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
   };
 
-  const deleteBudget = (id) => {
-    sendRequest(APP_CONFIG.APIS.DELETE_BUDGET+"/"+id, 'DELETE', null, APP_CONFIG.APIS.DELETE_BUDGET);
+  const deleteBudget = (id) => () => {
+    if (id) {
+      sendRequest(APP_CONFIG.APIS.DELETE_BUDGET + "/" + id, 'DELETE', null, APP_CONFIG.APIS.DELETE_BUDGET);
+    }
   };
 
   const openBudgetCategory = () => {
@@ -198,19 +200,19 @@ export default function Budget(props) {
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_BUDGETS:
-        var data = BUDGET_LIST;
-        if (data) {
+        // var data = BUDGET_LIST;
+        if (data && !error) {
           dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: data });
-        } else if(error){
+        } else if (error) {
           props.handleSnackbar("Failed to fetch budgets!", "error");
         }
         //TODO
-        
+
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
         //TODO
         var data = CATEGORIES_LIST;
-        if (data) {
+        if (data && !error) {
           var categoryMapTemp = {};
           if (data.length) {
             data.forEach(e => {
@@ -223,7 +225,7 @@ export default function Budget(props) {
           props.handleSnackbar("Failed to fetch categories!", "error");
         }
         break;
-        case APP_CONFIG.APIS.DELETE_BUDGET:
+      case APP_CONFIG.APIS.DELETE_BUDGET:
         if (data && !error) {
           loadBudgets();
         } else if (error) {
@@ -241,7 +243,7 @@ export default function Budget(props) {
   }, [])
 
   return (
-    <Page title={"Budgets | "+APP_CONFIG.APP_NAME}>
+    <Page title={"Budgets | " + APP_CONFIG.APP_NAME}>
       <AppContext.Consumer>
         {context => {
           return (
@@ -251,7 +253,7 @@ export default function Budget(props) {
                   <Typography variant="h4" gutterBottom>
                     Budgets
                   </Typography>
-                  
+
                   <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
                     <Button
                       onClick={openBudgetCategory}
@@ -276,9 +278,9 @@ export default function Budget(props) {
                 </Stack>
 
                 <Card>
-                <div>
-                  {isLoading && <LinearProgress />}
-                </div>
+                  <div>
+                    {isLoading && <LinearProgress />}
+                  </div>
                   {/* <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
@@ -286,7 +288,7 @@ export default function Budget(props) {
           /> */}
 
                   <Scrollbar>
-                    <BudgetTable budgets={budgets} categoryMap={categoryMap} handleConfirmation={context.handleConfirmation} deleteBudget={deleteBudget}/>
+                    <BudgetTable budgets={budgets} categoryMap={categoryMap} handleConfirmation={context.handleConfirmation} deleteBudget={deleteBudget} />
                   </Scrollbar>
 
                   {/* <TablePagination
@@ -300,8 +302,8 @@ export default function Budget(props) {
                   /> */}
                 </Card>
               </Container>
-              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation}/>
-              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation}/>
+              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation} />
+              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation} />
             </>
           );
         }}

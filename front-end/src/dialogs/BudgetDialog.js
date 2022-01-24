@@ -13,6 +13,7 @@ import { getMonths } from 'src/utils/constants';
 import useHttp from '../utils/http';
 import { APP_CONFIG } from '../config';
 import CurrencyInput from 'src/components/CurrencyInput';
+import CATEGORIES_LIST from '../_mocks_/categories';
 
 const ACTIONS = {
     SET_LOAD_DATA: 'SET_DESCRIPTION',
@@ -33,6 +34,8 @@ const transactionsReducer = (curTrasactionState, action) => {
             return { ...curTrasactionState, category: action.category }
         case ACTIONS.SET_CATEGORIES:
             return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
+        case ACTIONS.HANDLE_RESET:
+            return { ...curTrasactionState, categories: null, amount: "", month: null }
         default:
             throw new Error('Should not get here');
     }
@@ -41,7 +44,7 @@ const transactionsReducer = (curTrasactionState, action) => {
 export default function BudgetDialog(props) {
     const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
     const [{ amount, month, category, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
-        { amount: 0.0, isIncome: true, month: "JANUARY", category: null, categories: [], categoryMap: {} });
+        { amount: 0.0, isIncome: true, month: null, category: null, categories: [], categoryMap: {} });
 
     const handleClose = () => {
         props.handleClose(false);
@@ -63,7 +66,7 @@ export default function BudgetDialog(props) {
 
     const getCategories = () => {
         sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
-      };
+    };
 
     const handleAmount = (event) => {
         var value = parseFloat(event.target.value).toFixed(2);
@@ -75,7 +78,7 @@ export default function BudgetDialog(props) {
     };
 
     const handleCategory = (event) => {
-        dispatchTransactions({ type: ACTIONS.SET_MONTH, month: event.target.value });
+        dispatchTransactions({ type: ACTIONS.SET_CATEGORY, category: event.target.value });
     };
 
     useEffect(() => {
@@ -90,7 +93,8 @@ export default function BudgetDialog(props) {
                 }
                 break;
             case APP_CONFIG.APIS.GET_CATEGORIES:
-                if (data) {
+                // var data = CATEGORIES_LIST;
+                if (data && !error) {
                     var categoryMapTemp = {};
                     if (data.length) {
                         data.forEach(e => {
@@ -109,9 +113,9 @@ export default function BudgetDialog(props) {
 
     useEffect(() => {
         if (props.open) {
-          getCategories();
+            getCategories();
         }
-      }, [props.open]);
+    }, [props.open]);
 
     return (
         <Dialog fullWidth maxWidth="sm" open={props.open} onClose={handleClose}>
@@ -125,7 +129,7 @@ export default function BudgetDialog(props) {
                     noValidate
                     autoComplete="off"
                 >
-                    <CurrencyInput value={amount} handleChange={handleAmount}/>
+                    <CurrencyInput value={amount} handleChange={handleAmount} />
                     {/* <FormControl fullWidth sx={{ m: 1 }}>
                         <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
                         <OutlinedInput
@@ -174,7 +178,7 @@ export default function BudgetDialog(props) {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
-                <Button disabled={!category} variant="contained" onClick={createBudget}>Create</Button>
+                <Button disabled={!category || !month} variant="contained" onClick={createBudget}>Create</Button>
             </DialogActions>
         </Dialog>
     );

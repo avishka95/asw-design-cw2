@@ -48,8 +48,7 @@ function Row(props) {
   const [open, setOpen] = useState(false);
 
   const handleDelete = () => {
-    //TODO
-    props.handleConfirmation && props.handleConfirmation("Do you want to delete this transaction?", props.deleteBudget())
+    props.handleConfirmation && props.handleConfirmation("Do you want to delete this?", props.deleteBudget())
   };
 
   useEffect(() => {

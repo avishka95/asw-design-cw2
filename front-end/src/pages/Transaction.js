@@ -196,9 +196,8 @@ export default function Transaction(props) {
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_TRANSACTIONS:
-        //TODO
-        var data = TRANSACTION_LIST;
-        if (data) {
+        // var data = TRANSACTION_LIST;
+        if (data && !error) {
           if (data.length) {
             var tempTransactionMap = {};
             data.forEach(e => {
@@ -218,6 +217,7 @@ export default function Transaction(props) {
         }
         break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
+        // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
           if (data.length) {
