@@ -39,9 +39,6 @@ import { APP_CONFIG } from 'src/config';
 
 // ----------------------------------------------------------------------
 
-function ccyFormat(num) {
-  return `$${num.toFixed(2)}`;
-}
 
 const TABLE_HEAD = [
   { id: 'description', label: 'Description', alignRight: false },
@@ -279,29 +276,13 @@ export default function Budget(props) {
                   <div>
                     {isLoading && <LinearProgress />}
                   </div>
-                  {/* <UserListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          /> */}
-
                   <Scrollbar>
                     <BudgetTable budgets={budgets} categoryMap={categoryMap} handleConfirmation={context.handleConfirmation} deleteBudget={deleteBudget} />
                   </Scrollbar>
-
-                  {/* <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={BUDGET_LIST.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  /> */}
                 </Card>
               </Container>
               <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation} />
-              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation} />
+              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation} load={loadBudgets}/>
             </>
           );
         }}

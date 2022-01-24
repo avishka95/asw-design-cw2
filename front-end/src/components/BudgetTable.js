@@ -15,12 +15,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { getMonthForConstant } from 'src/utils/constants';
+import { fCurrency } from 'src/utils/formatNumber';
 import useHttp from 'src/utils/http';
 import { APP_CONFIG } from 'src/config';
-
-function ccyFormat(num) {
-  return `$${num.toFixed(2)}`;
-}
+import Label from './Label';
 
 
 function createData(month, income, expense) {
@@ -59,16 +57,16 @@ function Row(props) {
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+          {!row.totalExpense && !row.totalBudget ? null : <IconButton disabled={!row.totalExpense && !row.totalBudget} aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          </IconButton>}
         </TableCell>
         <TableCell component="th" scope="row">
           {getMonthForConstant(row.month)}
         </TableCell>
-        <TableCell align="center">{ccyFormat(row.totalIncome)}</TableCell>
-        <TableCell align="center">{ccyFormat(row.totalExpense)}</TableCell>
-        <TableCell align="center">{ccyFormat(row.totalBudget)}</TableCell>
+        <TableCell align="center"><Label variant="ghost" color={'success'}>{fCurrency(row.totalIncome)}</Label></TableCell>
+        <TableCell align="center"><Label variant="ghost" color={'error'}>{fCurrency(row.totalExpense)}</Label></TableCell>
+        <TableCell align="center"><Label variant="ghost" color={'warning'}>{fCurrency(row.totalBudget)}</Label></TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -81,25 +79,34 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Category</TableCell>
-                    <TableCell>Budget</TableCell>
+                    <TableCell align="center">Budget</TableCell>
+                    <TableCell align="center">Earned</TableCell>
                     <TableCell align="center">Spent</TableCell>
-                    <TableCell align="center"></TableCell>
+                    {/* <TableCell align="center"></TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.categorylist.map((categoryRow) => (
-                    <TableRow key={categoryRow.categoryId}>
-                      <TableCell component="th" scope="row">
-                        {categoryMap[categoryRow.categoryId] ? categoryMap[categoryRow.categoryId].categoryName : null}
-                      </TableCell>
-                      <TableCell>{ccyFormat(categoryRow.spent)}</TableCell>
-                      <TableCell align="center">{ccyFormat(categoryRow.spent)}</TableCell>
-                      <TableCell align="center">
-                        <IconButton onClick={handleDelete} aria-label="expand row" size="small">
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
+                    <>{
+                      !categoryRow.budget && !categoryRow.spent ? null :
+                        <TableRow key={categoryRow.categoryId}>
+                          <TableCell component="th" scope="row">
+                            <Label variant="ghost" color={categoryMap[categoryRow.categoryId] && categoryMap[categoryRow.categoryId].isIncome ?'success':'error'}>
+                              {categoryMap[categoryRow.categoryId] ? categoryMap[categoryRow.categoryId].categoryName : null}
+                            </Label>
+                          </TableCell>
+                          <TableCell align="center">{fCurrency(categoryRow.budget)}</TableCell>
+                          <TableCell align="center">{fCurrency(categoryRow.earned)}</TableCell>
+                          <TableCell align="center">{fCurrency(categoryRow.spent)}</TableCell>
+                          {/* <TableCell align="center">
+                            <IconButton onClick={handleDelete} aria-label="expand row" size="small">
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell> */}
+                        </TableRow>
+                    }
+                    </>
+
                   ))}
                 </TableBody>
               </Table>
@@ -131,7 +138,7 @@ export default function BudgetTable(props) {
         </TableHead>
         <TableBody>
           {props.budgets.map((row) => (
-            <Row key={row.id} row={row} categoryMap={props.categoryMap} handleConfirmation={props.handleConfirmation} deleteBudget={props.deleteBudget}/>
+            <Row key={row.id} row={row} categoryMap={props.categoryMap} handleConfirmation={props.handleConfirmation} deleteBudget={props.deleteBudget} />
           ))}
         </TableBody>
       </Table>

@@ -35,12 +35,14 @@ import CATEGORIES_LIST from '../_mocks_/categories';
 import useHttp from 'src/utils/http';
 import { APP_CONFIG } from 'src/config';
 import { getMonthForConstant, getMonthObjForConstant } from 'src/utils/constants';
+import {fCurrency} from '../utils/formatNumber';
+
 
 // ----------------------------------------------------------------------
 
-function ccyFormat(num) {
-  return `$${num.toFixed(2)}`;
-}
+// function ccyFormat(num) {
+//   return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+// }
 
 const TABLE_HEAD = [
   { id: 'description', label: 'Description', alignCenter: true },
@@ -108,7 +110,7 @@ export default function Transaction(props) {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [transactionId, setTransactionId] = useState(null);
 
   const loadTransactions = () => {
@@ -209,8 +211,8 @@ export default function Transaction(props) {
         break;
       case APP_CONFIG.APIS.DELETE_TRANSACTION:
         if (data && !error) {
-            props.handleSnackbar("Successfully deleted transaction!", "success");
-            loadTransactions();
+          props.handleSnackbar("Successfully deleted transaction!", "success");
+          loadTransactions();
         } else if (error) {
           props.handleSnackbar("Failed to delete transaction!", "error");
         }
@@ -224,7 +226,7 @@ export default function Transaction(props) {
               categoryMapTemp[e.categoryId] = e;
             });
           }
-          
+
           dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
         } else if (error) {
           props.handleSnackbar("Failed to fetch categories!", "error");
@@ -241,7 +243,7 @@ export default function Transaction(props) {
   }, []);
 
   return (
-    <Page title={"Transactions | "+APP_CONFIG.APP_NAME}>
+    <Page title={"Transactions | " + APP_CONFIG.APP_NAME}>
       <AppContext.Consumer>
         {context => {
           return (<>
@@ -285,7 +287,7 @@ export default function Transaction(props) {
                       <TableBody>
                         {filteredTransactions
                           .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                          .map((row) => {
+                          .reverse().map((row) => {
                             const { transactionId, description, amount, isIncome, month, categoryId } = row;
                             const isItemSelected = selected.indexOf(transactionId) !== -1;
                             return (
@@ -303,7 +305,7 @@ export default function Transaction(props) {
                                     onChange={(event) => handleClick(event, transactionId)}
                                   /> */}
                                 </TableCell>
-                                <TableCell component="th" scope="row" padding="none" >
+                                <TableCell align="center" component="th" scope="row" padding="none" >
                                   <Stack direction="row" alignItems="center" spacing={2}>
                                     {/* <Avatar alt={transactionId} src={avatarUrl} /> */}
                                     <Typography variant="subtitle2" noWrap>
@@ -313,11 +315,11 @@ export default function Transaction(props) {
                                 </TableCell>
                                 <TableCell color="success" align="center">
                                   <Label variant="ghost" color={isIncome ? 'success' : 'error'}>
-                                    {ccyFormat(amount)}
+                                    {fCurrency(amount)}
                                   </Label>
                                 </TableCell>
                                 <TableCell align="center">{getMonthForConstant(month)}</TableCell>
-                                <TableCell align="center">{categoryId && categoryMap[categoryId]? categoryMap[categoryId].categoryName : null}</TableCell>
+                                <TableCell align="center">{categoryId && categoryMap[categoryId] ? categoryMap[categoryId].categoryName : null}</TableCell>
                                 {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
                                 {/* <TableCell align="left">
                             <Label variant="ghost" color={isIncome ? 'success' : 'error'}>
@@ -352,15 +354,15 @@ export default function Transaction(props) {
                   </TableContainer>
                 </Scrollbar>
 
-                {/* <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 50]}
                   component="div"
                   count={transactions.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                /> */}
+                />
               </Card>
             </Container>
             <TransactionDialog open={openTransactionDialog} handleClose={handleCloseTransactionDialog} handleSnackbar={context.handleSnackbar} load={loadTransactions}

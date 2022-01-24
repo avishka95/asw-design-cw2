@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
-import { Avatar, Divider, FilledInput, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemText, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
+import { Avatar, Divider, FilledInput, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
 import useHttp from '../utils/http';
 import { APP_CONFIG } from 'src/config';
@@ -20,11 +20,13 @@ import { isNull } from 'lodash';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import CATEGORIES_LIST from '../_mocks_/categories';
+import Label from 'src/components/Label';
 
 
 const ACTIONS = {
     SET_NAME: 'SET_NAME',
     SET_CATEGORIES: 'SET_CATEGORIES',
+    SET_IS_INCOME: 'SET_IS_INCOME',
     HANDLE_RESET: 'HANDLE_RESET',
 }
 
@@ -34,6 +36,8 @@ const transactionsReducer = (curTrasactionState, action) => {
             return { ...curTrasactionState, name: action.name }
         case ACTIONS.SET_CATEGORIES:
             return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
+        case ACTIONS.SET_IS_INCOME:
+            return { ...curTrasactionState, isIncome: action.isIncome }
         default:
             throw new Error('Should not get here');
     }
@@ -41,8 +45,8 @@ const transactionsReducer = (curTrasactionState, action) => {
 
 export default function CategoryDialog(props) {
     const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
-    const [{ name, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
-        { name: "", categories: [], categoryMap: {} });
+    const [{ name, categories, categoryMap, isIncome }, dispatchTransactions] = useReducer(transactionsReducer,
+        { name: "", categories: [], categoryMap: {}, isIncome: true });
 
     const handleName = (event) => {
         dispatchTransactions({ type: ACTIONS.SET_NAME, name: event.target.value });
@@ -62,13 +66,21 @@ export default function CategoryDialog(props) {
     };
 
     const deleteCategory = (id) => () => {
-        if(id){
-            sendRequest(APP_CONFIG.APIS.DELETE_CATEGORY+"/"+id, 'DELETE', null, APP_CONFIG.APIS.DELETE_CATEGORY);
+        if (id) {
+            sendRequest(APP_CONFIG.APIS.DELETE_CATEGORY + "/" + id, 'DELETE', null, APP_CONFIG.APIS.DELETE_CATEGORY);
         }
     };
 
     const handleDeleteCategory = (id) => () => {
         props.handleConfirmation("Are you sure you want to delete this category?", deleteCategory(id))
+    };
+
+    const handleIsIncome = (event) => {
+        dispatchTransactions({ type: ACTIONS.SET_IS_INCOME, isIncome: true });
+    };
+
+    const handleIsExpense = (event) => {
+        dispatchTransactions({ type: ACTIONS.SET_IS_INCOME, isIncome: false });
     };
 
     useEffect(() => {
@@ -106,7 +118,7 @@ export default function CategoryDialog(props) {
                 }
                 break;
 
-                case APP_CONFIG.APIS.DELETE_CATEGORY:
+            case APP_CONFIG.APIS.DELETE_CATEGORY:
                 if (data && !error) {
                     getCategories();
                     props.handleSnackbar("Successfully deleted category!", "success");
@@ -139,6 +151,12 @@ export default function CategoryDialog(props) {
                             />
                         </span>
                         <span>
+                            <ButtonGroup color={isIncome ? "error" : "primary"} aria-label="income and expense button group">
+                                <Button size="small" onClick={handleIsIncome} variant={isIncome ? "contained" : "outlined"} color="primary" key="income">Income</Button>
+                                <Button size="small" onClick={handleIsExpense} variant={isIncome ? "outlined" : "contained"} color="error" key="expense">Expense</Button>
+                            </ButtonGroup>
+                        </span>
+                        <span>
                             <Button disabled={!name} variant="contained" startIcon={<AddIcon />} onClick={createCategory}>
                                 Create New
                             </Button>
@@ -157,22 +175,25 @@ export default function CategoryDialog(props) {
                     </div>
                     <List>
                         {categories && categories.length ? categories.map(category => {
-                            return (<ListItem
-                                secondaryAction={
+                            return (
+                                <ListItem secondaryAction={
                                     category.isCustom ?
                                         <IconButton onClick={handleDeleteCategory(category.categoryId)} aria-label="expand row" size="small">
                                             <DeleteIcon />
-                                        </IconButton> :
+                                        </IconButton>
+                                        :
                                         null
-                                }
-                            >
-                                <ListItemAvatar>
-                                </ListItemAvatar>
-                                <ListItemText
+                                }>
+                                    <ListItemButton>
+                                        <ListItemAvatar>
+                                        </ListItemAvatar>
+                                        {/* <ListItemText
                                     primary={category.categoryName}
-                                />
-                            </ListItem>);
-                        }) : <span style={{textAlign: 'center'}}><Typography variant="caption" display="block" gutterBottom>
+                                /> */}
+                                        <Label variant="ghost" color={category.isIncome ? 'success' : 'error'}>{category.categoryName}</Label>
+                                    </ListItemButton>
+                                </ListItem>);
+                        }) : <span style={{ textAlign: 'center' }}><Typography variant="caption" display="block" gutterBottom>
                             Nothing to show
                         </Typography></span>}
                     </List>

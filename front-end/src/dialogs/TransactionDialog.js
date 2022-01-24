@@ -35,7 +35,7 @@ const transactionsReducer = (curTrasactionState, action) => {
     case ACTIONS.SET_AMOUNT:
       return { ...curTrasactionState, amount: action.amount }
     case ACTIONS.SET_IS_INCOME:
-      return { ...curTrasactionState, isIncome: action.isIncome }
+      return { ...curTrasactionState, isIncome: action.isIncome, category: null }
     case ACTIONS.SET_MONTH:
       return { ...curTrasactionState, month: action.month }
     case ACTIONS.SET_CATEGORY:
@@ -56,11 +56,13 @@ export default function TransactionDialog(props) {
   const { isLoading, data, error, sendRequest, reqExtra, isOpen } = useHttp();
   const [{ description, amount, isIncome, month, category, categories, categoryMap }, dispatchTransactions] = useReducer(transactionsReducer,
     { description: "", amount: 0.0, isIncome: true, month: null, category: null, categories: [], categoryMap: {} });
+  const [filterCategories, setFilteredCategories] = useState([]);
 
 
   const handleConfirm = () => {
     props.data.transactionId ? updateTransaction() : createTransaction();
   };
+
   const createTransaction = () => {
     var payload = {
       "description": description,
@@ -117,6 +119,17 @@ export default function TransactionDialog(props) {
     dispatchTransactions({ type: ACTIONS.SET_CATEGORY, category: event.target.value });
   };
 
+  const handleFilterCategories = () => {
+    var tempArray = categories.filter(e=>{
+      if(isIncome){
+        return e.isIncome;
+      } else {
+        return !e.isIncome;
+      }
+    })
+    setFilteredCategories(tempArray);
+  };
+
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.ADD_TRANSACTION:
@@ -142,7 +155,7 @@ export default function TransactionDialog(props) {
         // var data = CATEGORIES_LIST;
         if (data && !error) {
           var categoryMapTemp = {};
-          if (Array.isArray(data)) {
+          if (data.length) {
             data.forEach(e => {
               categoryMapTemp[e.categoryId] = e;
             });
@@ -170,6 +183,10 @@ export default function TransactionDialog(props) {
       dispatchTransactions({ type: ACTIONS.SET_DATA, amount: props.data.amount, isIncome: props.data.isIncome, description: props.data.description, month: props.data.month, category: props.data.category});
     }
   }, [props.data]);
+
+  useEffect(()=>{
+    handleFilterCategories();
+  },[categories, isIncome])
 
   return (
     <Dialog fullWidth maxWidth={'lg'} open={props.open} onClose={handleClose}>
@@ -248,6 +265,7 @@ export default function TransactionDialog(props) {
                   id="demo-simple-select"
                   value={month}
                   label="Month"
+                  disabled={props.data.transactionId}
                   onChange={handleMonth}
                 >
                   {getMonths().map(e => {
@@ -264,9 +282,10 @@ export default function TransactionDialog(props) {
                   id="demo-simple-select"
                   value={category}
                   label="Category"
+                  disabled={props.data.transactionId}
                   onChange={handleCategory}
                 >
-                  {categories.map(e => {
+                  {filterCategories.map(e => {
                     return (<MenuItem value={e.categoryId}>{e.categoryName}</MenuItem>);
                   })}
                 </Select>

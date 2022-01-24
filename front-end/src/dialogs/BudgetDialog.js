@@ -14,6 +14,7 @@ import useHttp from '../utils/http';
 import { APP_CONFIG } from '../config';
 import CurrencyInput from 'src/components/CurrencyInput';
 import CATEGORIES_LIST from '../_mocks_/categories';
+import Label from 'src/components/Label';
 
 const ACTIONS = {
     SET_LOAD_DATA: 'SET_DESCRIPTION',
@@ -166,7 +167,7 @@ export default function BudgetDialog(props) {
                             onChange={handleCategory}
                         >
                             {categories.map(e => {
-                                return (<MenuItem value={e.categoryId}>{e.categoryName}</MenuItem>);
+                                return (<MenuItem value={e.categoryId}><Label variant="ghost" color={e.isIncome ?'success':'error'}>{e.categoryName}</Label></MenuItem>);
                             })}
                         </Select>
                     </FormControl>

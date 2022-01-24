@@ -15,10 +15,12 @@ export default function UserMoreMenu(props) {
 
   const handleOnDelete = () => {
     props.onDelete && props.onDelete();
+    setIsOpen(false);
   };
 
   const handleOnEdit = () => {
     props.onEdit && props.onEdit();
+    setIsOpen(false);
   };
 
   return (

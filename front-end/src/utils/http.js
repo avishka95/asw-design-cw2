@@ -33,30 +33,26 @@ const useHttp = () => {
                 },
             })
                 .then((response) => {
+
                     if ((response.status === 200 || response.status === 201) && response.body) {
-                        var jsonToReturn = null;
-                        try{
-                            var tryJsonConversion =  response.json();
-                            jsonToReturn = tryJsonConversion;
-                        } catch(e){
-                            jsonToReturn = {};
-                        }
-                        return jsonToReturn;
+                        return response.json().catch(err=>{
+                            return {};
+                        });
                     }
                     else if (response.status >= 400) {
                         if (isRetry) {
                             dispatchHTTP({ type: 'ERROR', extra: reqExtra, errorMessage: 'Try reloading the page.' });
                             return;
                         }
-                        if(response.status === 401){
+                        if (response.status === 401) {
                             sendRequest(encodedUrl, method, body, reqExtra, true);
                         } else {
-                            response.json().then((errorResponse)=>{
+                            response.json().then((errorResponse) => {
                                 dispatchHTTP({ type: 'ERROR', extra: reqExtra, errorMessage: errorResponse });
-                            }).catch(err=>{
+                            }).catch(err => {
                                 dispatchHTTP({ type: 'ERROR', extra: reqExtra, errorMessage: err });
                             });
-                            
+
                             return;
                         }
                     }
@@ -79,7 +75,7 @@ const useHttp = () => {
 
         }, []);
 
-    
+
 
     const clearError = () => {
         dispatchHTTP({ type: 'CLEAR' });
