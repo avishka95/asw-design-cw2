@@ -1,5 +1,6 @@
 const API_ENDPOINT = "http://localhost:8080";
 export const APP_CONFIG = {
+    APP_NAME: "Expense Tracker",
     APIS: {
         GET_TRANSACTIONS: API_ENDPOINT + "/getTransactions",
         ADD_TRANSACTION: API_ENDPOINT + "/newTransaction",

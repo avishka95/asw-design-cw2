@@ -12,6 +12,7 @@ import { FilledInput, FormControl, InputAdornment, InputLabel, MenuItem, Outline
 import { getMonths } from 'src/utils/constants';
 import useHttp from '../utils/http';
 import { APP_CONFIG } from '../config';
+import CurrencyInput from 'src/components/CurrencyInput';
 
 const ACTIONS = {
     SET_LOAD_DATA: 'SET_DESCRIPTION',
@@ -124,7 +125,8 @@ export default function BudgetDialog(props) {
                     noValidate
                     autoComplete="off"
                 >
-                    <FormControl fullWidth sx={{ m: 1 }}>
+                    <CurrencyInput value={amount} handleChange={handleAmount}/>
+                    {/* <FormControl fullWidth sx={{ m: 1 }}>
                         <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-amount"
@@ -139,7 +141,7 @@ export default function BudgetDialog(props) {
                             startAdornment={<InputAdornment position="start">$</InputAdornment>}
                             label="Amount"
                         />
-                    </FormControl>
+                    </FormControl> */}
                     <FormControl fullWidth sx={{ m: 1, }}>
                         <InputLabel id="demo-simple-select-label">Month</InputLabel>
                         <Select

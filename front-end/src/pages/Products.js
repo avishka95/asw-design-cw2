@@ -12,6 +12,7 @@ import {
 } from '../components/_dashboard/products';
 //
 import PRODUCTS from '../_mocks_/products';
+import { APP_CONFIG } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ export default function EcommerceShop() {
   };
 
   return (
-    <Page title="Dashboard: Products | Minimal-UI">
+    <Page title={"Dashboard: Products | "+APP_CONFIG.APP_NAME}>
       <Container>
         <Typography variant="h4" sx={{ mb: 5 }}>
           Products

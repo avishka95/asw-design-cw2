@@ -8,6 +8,7 @@ import Page from '../components/Page';
 import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '../components/_dashboard/blog';
 //
 import POSTS from '../_mocks_/blog';
+import { APP_CONFIG } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ const SORT_OPTIONS = [
 
 export default function Blog() {
   return (
-    <Page title="Dashboard: Blog | Minimal-UI">
+    <Page title={"Dashboard: Blog | "+APP_CONFIG.APP_NAME}>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>

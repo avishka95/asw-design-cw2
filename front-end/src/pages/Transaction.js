@@ -242,7 +242,7 @@ export default function Transaction(props) {
   }, []);
 
   return (
-    <Page title="Transactions | Minimal-UI">
+    <Page title={"Transactions | "+APP_CONFIG.APP_NAME}>
       <AppContext.Consumer>
         {context => {
           return (<>

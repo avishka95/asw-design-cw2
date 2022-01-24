@@ -8,10 +8,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
-import { FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
+import { CssBaseline, FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
 import { getMonths } from 'src/utils/constants';
 import { APP_CONFIG } from 'src/config';
 import useHttp from 'src/utils/http';
+import CurrencyTextField from '@unicef/material-ui-currency-textfield/dist/CurrencyTextField';
+import CurrencyInput from 'src/components/CurrencyInput';
 
 const ACTIONS = {
   SET_LOAD_DATA: 'SET_DESCRIPTION',
@@ -52,14 +54,14 @@ export default function TransactionDialog(props) {
 
 
   const handleConfirm = () => {
-    props.data.transactionId? updateTransaction():createTransaction();
+    props.data.transactionId ? updateTransaction() : createTransaction();
   };
   const createTransaction = () => {
     var payload = {
       "description": description,
-      "amount": amount,
+      "amount": Number(amount),
       "categoryId": category,
-      "month": month? month.value : null,
+      "month": month ? month.value : null,
       "isIncome": isIncome
     };
     sendRequest(APP_CONFIG.APIS.ADD_TRANSACTION, 'POST', payload, APP_CONFIG.APIS.ADD_TRANSACTION);
@@ -68,12 +70,12 @@ export default function TransactionDialog(props) {
   const updateTransaction = () => {
     var payload = {
       "description": description,
-      "amount": amount,
+      "amount": Number(amount),
       "categoryId": category,
-      "month": month? month.value : null,
+      "month": month ? month.value : null,
       "isIncome": isIncome
     };
-    sendRequest(APP_CONFIG.APIS.UPDATE_TRANSACTION+"/"+props.data.transactionId, 'POST', payload, APP_CONFIG.APIS.UPDATE_TRANSACTION);
+    sendRequest(APP_CONFIG.APIS.UPDATE_TRANSACTION + "/" + props.data.transactionId, 'POST', payload, APP_CONFIG.APIS.UPDATE_TRANSACTION);
   };
 
   const getCategories = () => {
@@ -123,15 +125,15 @@ export default function TransactionDialog(props) {
           props.handleSnackbar("Failed to create transaction!", "error");
         }
         break;
-        case APP_CONFIG.APIS.UPDATE_TRANSACTION:
-          if (data && !error) {
-            props.handleSnackbar("Successfully updated transaction!", "success");
-            handleClose();
-            props.load();
-          } else if (error) {
-            props.handleSnackbar("Failed to update transaction!", "error");
-          }
-          break;
+      case APP_CONFIG.APIS.UPDATE_TRANSACTION:
+        if (data && !error) {
+          props.handleSnackbar("Successfully updated transaction!", "success");
+          handleClose();
+          props.load();
+        } else if (error) {
+          props.handleSnackbar("Failed to update transaction!", "error");
+        }
+        break;
       case APP_CONFIG.APIS.GET_CATEGORIES:
         if (data) {
           var categoryMapTemp = {};
@@ -154,17 +156,17 @@ export default function TransactionDialog(props) {
     if (props.open) {
       getCategories();
     } else {
-      dispatchTransactions({ type: ACTIONS.HANDLE_RESET});
+      dispatchTransactions({ type: ACTIONS.HANDLE_RESET });
     }
   }, [props.open]);
 
   useEffect(() => {
-    
+
   }, [props.data]);
 
   return (
     <Dialog fullWidth maxWidth={'lg'} open={props.open} onClose={handleClose}>
-      <DialogTitle>{props.data.transactionId? "Update Transaction" : "New Transaction"}</DialogTitle>
+      <DialogTitle>{props.data.transactionId ? "Update Transaction" : "New Transaction"}</DialogTitle>
       <DialogContent>
         <Box
           component="form"
@@ -189,7 +191,8 @@ export default function TransactionDialog(props) {
                 spacing={2}
               >
                 <span>
-                  <FormControl fullWidth sx={{ m: 1 }}>
+                  <CurrencyInput value={amount} handleChange={handleAmount}/>
+                  {/* <FormControl fullWidth sx={{ m: 1 }}>
                     <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
                     <OutlinedInput
                       id="outlined-adornment-amount"
@@ -205,7 +208,7 @@ export default function TransactionDialog(props) {
                       startAdornment={<InputAdornment position="start">$</InputAdornment>}
                       label="Amount"
                     />
-                  </FormControl>
+                  </FormControl> */}
                 </span>
                 <span>
                   <ButtonGroup color={isIncome ? "error" : "primary"} aria-label="income and expense button group">
@@ -219,7 +222,7 @@ export default function TransactionDialog(props) {
             <Grid item xs={6}>
 
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <TextField
                 variant="outlined"
                 // required
@@ -230,7 +233,7 @@ export default function TransactionDialog(props) {
               // defaultValue="Transaction"
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ m: 1, }}>
                 <InputLabel id="demo-simple-select-label">Month</InputLabel>
                 <Select
@@ -246,7 +249,7 @@ export default function TransactionDialog(props) {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ m: 1, }}>
                 <InputLabel id="demo-simple-select-label">Category</InputLabel>
                 <Select
@@ -268,7 +271,7 @@ export default function TransactionDialog(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button  variant="contained" onClick={handleConfirm}>{props.data.transactionId? "Update" : "Create" }</Button>
+        <Button variant="contained" onClick={handleConfirm}>{props.data.transactionId ? "Update" : "Create"}</Button>
       </DialogActions>
     </Dialog>
   );

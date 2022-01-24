@@ -229,7 +229,7 @@ export default function Budget(props) {
   }, [])
 
   return (
-    <Page title="Budgets | Minimal-UI">
+    <Page title={"Budgets | "+APP_CONFIG.APP_NAME}>
       <AppContext.Consumer>
         {context => {
           return (

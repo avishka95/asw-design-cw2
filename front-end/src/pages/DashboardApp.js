@@ -1,5 +1,6 @@
 // material
 import { Box, Grid, Container, Typography } from '@mui/material';
+import { APP_CONFIG } from 'src/config';
 // components
 import Page from '../components/Page';
 import {
@@ -21,7 +22,7 @@ import {
 
 export default function DashboardApp() {
   return (
-    <Page title="Dashboard | Minimal-UI">
+    <Page title={"Dashboard | "+APP_CONFIG.APP_NAME}>
       <Container maxWidth="xl">
         <Box sx={{ pb: 5 }}>
           <Typography variant="h4">Hi, Welcome back</Typography>
