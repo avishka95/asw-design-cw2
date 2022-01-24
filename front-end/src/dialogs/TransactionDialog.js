@@ -22,6 +22,7 @@ const ACTIONS = {
   SET_MONTH: 'SET_MONTH',
   SET_CATEGORY: 'SET_CATEGORY',
   SET_CATEGORIES: 'SET_CATEGORIES',
+  SET_DATA: 'SET_DATA',
   HANDLE_RESET: 'HANDLE_RESET',
 }
 
@@ -39,6 +40,8 @@ const transactionsReducer = (curTrasactionState, action) => {
       return { ...curTrasactionState, category: action.category }
     case ACTIONS.SET_CATEGORIES:
       return { ...curTrasactionState, categories: action.categories, categoryMap: action.categoryMap }
+      case ACTIONS.SET_DATA:
+      return { ...curTrasactionState, description: action.description, amount: action.amount, isIncome: action.isIncome, month: action.month, category: action.category  }
     case ACTIONS.HANDLE_RESET:
       return { ...curTrasactionState, description: "", amount: 0.0, isIncome: true, month: null, category: null }
     default:
@@ -161,7 +164,9 @@ export default function TransactionDialog(props) {
   }, [props.open]);
 
   useEffect(() => {
-
+    if(props.data?.transactionId){
+      dispatchTransactions({ type: ACTIONS.SET_DATA, amount: props.data.amount, isIncome: props.data.isIncome, description: props.data.description, month: props.data.month, category: props.data.category});
+    }
   }, [props.data]);
 
   return (

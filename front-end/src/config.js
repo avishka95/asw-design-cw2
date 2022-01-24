@@ -8,6 +8,7 @@ export const APP_CONFIG = {
         DELETE_TRANSACTION: API_ENDPOINT + "/deleteTransaction",
         GET_BUDGETS: API_ENDPOINT + "/getBudgets",
         ADD_BUDGET: API_ENDPOINT + "/addBudget",
+        DELETE_BUDGET: API_ENDPOINT + "/deleteBudget",
         GET_CATEGORIES: API_ENDPOINT + "/getCategories",
         CREATE_CATEGORY: API_ENDPOINT + "/newCategory"
     }

@@ -209,7 +209,7 @@ export default function Transaction(props) {
         }
         break;
       case APP_CONFIG.APIS.DELETE_TRANSACTION:
-        if (data) {
+        if (data && !error) {
           if (data.length) {
             props.handleSnackbar("Successfully deleted transaction!", "success");
           }

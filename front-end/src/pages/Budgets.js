@@ -119,6 +119,10 @@ export default function Budget(props) {
     sendRequest(APP_CONFIG.APIS.GET_CATEGORIES, 'GET', null, APP_CONFIG.APIS.GET_CATEGORIES);
   };
 
+  const deleteBudget = (id) => {
+    sendRequest(APP_CONFIG.APIS.DELETE_BUDGET+"/"+id, 'DELETE', null, APP_CONFIG.APIS.DELETE_BUDGET);
+  };
+
   const openBudgetCategory = () => {
     setOpenCategory(true);
   };
@@ -194,7 +198,8 @@ export default function Budget(props) {
   useEffect(() => {
     switch (reqExtra) {
       case APP_CONFIG.APIS.GET_BUDGETS:
-        if (data && !error) {
+        var data = BUDGET_LIST;
+        if (data) {
           dispatchTransactions({ type: ACTIONS.SET_BUDGETS, budgets: data });
         } else if(error){
           props.handleSnackbar("Failed to fetch budgets!", "error");
@@ -216,6 +221,13 @@ export default function Budget(props) {
           dispatchTransactions({ type: ACTIONS.SET_CATEGORIES, categories: data, categoryMap: categoryMapTemp });
         } else if (error) {
           props.handleSnackbar("Failed to fetch categories!", "error");
+        }
+        break;
+        case APP_CONFIG.APIS.DELETE_BUDGET:
+        if (data && !error) {
+          loadBudgets();
+        } else if (error) {
+          props.handleSnackbar("Failed to delete budget!", "error");
         }
         break;
       default:
@@ -274,7 +286,7 @@ export default function Budget(props) {
           /> */}
 
                   <Scrollbar>
-                    <BudgetTable budgets={budgets} categoryMap={categoryMap}/>
+                    <BudgetTable budgets={budgets} categoryMap={categoryMap} handleConfirmation={context.handleConfirmation} deleteBudget={deleteBudget}/>
                   </Scrollbar>
 
                   {/* <TablePagination
@@ -288,8 +300,8 @@ export default function Budget(props) {
                   /> */}
                 </Card>
               </Container>
-              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} />
-              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar}/>
+              <CategoryDialog open={openCategory} handleClose={closeBudegtCategory} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation}/>
+              <BudgetDialog open={openBudget} handleClose={handleCloseBudget} handleSnackbar={context.handleSnackbar} handleConfirmation={context.handleConfirmation}/>
             </>
           );
         }}

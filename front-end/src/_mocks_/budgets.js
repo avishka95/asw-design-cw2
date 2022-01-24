@@ -57,7 +57,7 @@ const budgets = [
         totalBudget: 7.0,
         categorylist: [
             {
-                categoryId: uuidv4(),
+                categoryId: 2,
                 name: 2,
                 budget: 2.0,
                 spent: 1.0
